@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="timer-page">
+    <!-- PORTAL BACKGROUND -->
+    <div class="portal-background">
+        <div class="portal-glow portal-glow-1"></div>
+        <div class="portal-glow portal-glow-2"></div>
+    </div>
+
+    <!-- PARTICLE SYSTEM -->
     <div class="particle-container">
         <div class="particle purple"></div>
         <div class="particle cyan"></div>
@@ -19,50 +26,49 @@
         <div class="particle blue"></div>
     </div>
 
-    <div class="quest-progress-panel">
-        <div class="quest-header">
-            <div class="quest-status">
-                <span class="neon-purple">QUEST IN PROGRESS</span>
-            </div>
-            <div class="quest-name neon-cyan" id="questNameDisplay">
-                <!-- Quest name will be injected by timer.js -->
-            </div>
-        </div>
+    <!-- SCAN LINES OVERLAY -->
+    <div class="scan-lines"></div>
 
-        <div class="timer-section">
+    <!-- TIMER CONTAINER -->
+    <div class="timer-container">
+        <!-- Quest Progress Panel -->
+        <div class="quest-progress-panel">
+            <!-- QUEST HEADER -->
+            <div class="quest-header">
+                <div class="quest-status">
+                    QUEST IN PROGRESS
+                </div>
+                <div class="quest-name" id="questName">
+                    Loading Quest...
+                </div>
+            </div>
+
+            <!-- TIMER RING -->
             <div class="timer-ring-container">
                 <div class="timer-ring">
-                    <svg class="timer-svg" viewBox="0 0 200 200">
-                        <circle class="timer-background" cx="100" cy="100" r="90"></circle>
-                        <circle class="timer-progress" cx="100" cy="100" r="90"></circle>
-                    </svg>
                     <div class="timer-display">
-                        <span class="neon-cyan" id="timerDisplay">00:00</span>
+                        <span class="timer-time">00:00</span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="timer-controls">
-            <button id="startBtn" class="timer-button neon-cyan">
-                <span class="button-glow"></span>
-                START
-            </button>
-            <button id="pauseResumeBtn" class="timer-button neon-purple" style="display:none;">
-                <span class="button-glow"></span>
-                <span id="pauseResume">PAUSE</span>
-            </button>
-            <button id="finishBtn" class="timer-button neon-purple" style="display:none;">
-                <span class="button-glow"></span>
-                FINISH
-            </button>
-        </div>
+            <!-- TIMER CONTROLS -->
+            <div class="timer-controls">
+                <button class="btn-timer btn-start" id="startBtn">
+                    <span class="btn-label">START READING</span>
+                </button>
+                <button class="btn-timer btn-pause" id="pauseResumeBtn" style="display: none;">
+                    <span class="btn-label" id="pauseLabel">PAUSE</span>
+                </button>
+                <button class="btn-timer btn-finish" id="finishBtn" style="display: none;">
+                    <span class="btn-label">FINISH QUEST</span>
+                </button>
+            </div>
 
-        <div class="pro-tip-area">
-            <span class="neon-purple">PRO TIP:</span>
-            <span class="pro-tip-text neon-cyan" id="proTip">
-                Focus on your studies and make the best of your time!
-            </span>
+            <!-- TIMER INFO -->
+            <div class="timer-info">
+                <span class="info-label">Focus on your reading. Every second counts!</span>
+            </div>
         </div>
     </div>
 
