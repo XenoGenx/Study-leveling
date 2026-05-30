@@ -80,8 +80,16 @@ function startTimer() {
     isRunning = true;
     isPaused = false;
     
+    // Show pause and finish buttons immediately
+    const startBtn = document.getElementById('startBtn');
+    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+    const finishBtn = document.getElementById('finishBtn');
+    
+    if (startBtn) startBtn.style.display = 'none';
+    if (pauseResumeBtn) pauseResumeBtn.style.display = 'block';
+    if (finishBtn) finishBtn.style.display = 'block';
+    
     console.log('🟢 Timer started');
-    updateTimerButtons();
     
     timerInterval = setInterval(() => {
         if (!isPaused) {

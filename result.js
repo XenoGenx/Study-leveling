@@ -176,8 +176,8 @@ function displayResults() {
 }
 
 function setupEventListeners() {
-    const claimBtn = document.querySelector('.btn-claim');
-    const backBtn = document.querySelector('.btn-dashboard');
+    const claimBtn = document.getElementById('claimRewardBtn');
+    const backBtn = document.getElementById('backToDashboardBtn');
     
     if (claimBtn) {
         claimBtn.addEventListener('click', claimReward);
