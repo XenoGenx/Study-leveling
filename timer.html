@@ -3,53 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Focus Mode - STUDY GATE SYSTEM</title>
+    <title>Study Gate System - Timer</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="timer-container">
-        <div class="timer-panel">
-            <div class="timer-title" id="questName">READING QUEST</div>
-            <div class="timer-difficulty" id="questDifficulty">NORMAL</div>
-            
-            <!-- Timer Ring -->
-            <div class="timer-ring">
-                <div class="timer-circle timer-background"></div>
-                <div class="timer-circle timer-progress"></div>
-                <div class="timer-display">
-                    <div class="timer-time" id="timerDisplay">25:00</div>
-                    <div class="timer-label">FOCUS TIME</div>
-                </div>
+<body class="timer-page">
+    <div class="particle-container">
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+    </div>
+
+    <div class="quest-progress-panel">
+        <div class="quest-header">
+            <div class="quest-status">
+                <span class="neon-purple">QUEST IN PROGRESS</span>
             </div>
-            
-            <!-- Progress Bar -->
-            <div style="margin: 20px 0;">
-                <div style="height: 4px; background: rgba(0, 212, 255, 0.2); border-radius: 2px; overflow: hidden;">
-                    <div id="progressFill" style="height: 100%; background: linear-gradient(90deg, var(--cyan) 0%, var(--purple) 100%); width: 0%; transition: width 0.5s ease;"></div>
-                </div>
-            </div>
-            
-            <!-- Controls -->
-            <div class="timer-controls">
-                <button id="startBtn" class="btn-timer" style="background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%);">START READING</button>
-                <button id="pauseBtn" class="btn-timer" style="display: none;">PAUSE</button>
-                <button id="finishBtn" class="btn-timer finish">FINISH QUEST</button>
-            </div>
-            
-            <!-- Focus Tips -->
-            <div style="margin-top: 30px; padding: 15px; background: rgba(107, 95, 201, 0.1); border-radius: 8px; border-left: 3px solid var(--purple); text-align: center;">
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 5px;">💡 Pro Tip:</p>
-                <p style="font-size: 0.85rem; color: var(--text-light);">Turn off distractions and focus on your reading. Good luck, Hunter!</p>
+            <div class="quest-name neon-cyan" id="questNameDisplay">
+                <!-- Quest name will be injected by timer.js -->
             </div>
         </div>
-        
-        <!-- Particles -->
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle purple"></div>
-            <div class="particle"></div>
-            <div class="particle pink"></div>
-            <div class="particle"></div>
+
+        <div class="timer-section">
+            <div class="timer-ring-container">
+                <div class="timer-ring">
+                    <svg class="timer-svg" viewBox="0 0 200 200">
+                        <circle class="timer-background" cx="100" cy="100" r="90"></circle>
+                        <circle class="timer-progress" cx="100" cy="100" r="90"></circle>
+                    </svg>
+                    <div class="timer-display">
+                        <span class="neon-cyan" id="timerDisplay">00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timer-controls">
+            <button id="startBtn" class="timer-button neon-cyan">
+                <span class="button-glow"></span>
+                START
+            </button>
+            <button id="pauseResumeBtn" class="timer-button neon-purple" style="display:none;">
+                <span class="button-glow"></span>
+                <span id="pauseResume">PAUSE</span>
+            </button>
+            <button id="finishBtn" class="timer-button neon-purple" style="display:none;">
+                <span class="button-glow"></span>
+                FINISH
+            </button>
+        </div>
+
+        <div class="pro-tip-area">
+            <span class="neon-purple">PRO TIP:</span>
+            <span class="pro-tip-text neon-cyan" id="proTip">
+                Focus on your studies and make the best of your time!
+            </span>
         </div>
     </div>
 

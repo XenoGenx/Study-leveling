@@ -3,34 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quest Complete - Study Gate System</title>
+    <title>Study Gate System - Result</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <!-- Background Glow -->
-    <div class="gate-glow"></div>
-    
-    <!-- Particles -->
+<body class="result-page">
     <div class="particle-container">
-        <div class="particle cyan"></div>
         <div class="particle purple"></div>
-        <div class="particle pink"></div>
         <div class="particle cyan"></div>
+        <div class="particle blue"></div>
         <div class="particle purple"></div>
-        <div class="particle pink"></div>
         <div class="particle cyan"></div>
+        <div class="particle blue"></div>
         <div class="particle purple"></div>
-        <div class="particle pink"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
     </div>
-    
-    <!-- Result Container -->
-    <div class="result-container" id="resultContainer">
-        <div class="loading">
-            <div class="loading-spinner"></div>
-            <p>Loading Results...</p>
+
+    <div class="result-panel">
+        <div class="result-header">
+            <h1 class="neon-cyan">QUEST COMPLETE</h1>
+        </div>
+
+        <div class="result-content">
+            <div id="resultContainer" class="reward-cards-container">
+                <!-- Reward cards will be injected here by result.js -->
+            </div>
+        </div>
+
+        <div class="badge-unlock-section">
+            <div class="badge-grid" id="badgeGrid">
+                <!-- Unlocked badges will be displayed here by result.js -->
+            </div>
+        </div>
+
+        <div class="rank-up-alert" id="rankUpAlert" style="display:none;">
+            <span class="neon-purple">⚡ RANK UP! ⚡</span>
+        </div>
+
+        <div class="result-actions">
+            <button id="claimRewardBtn" class="result-button neon-cyan">
+                <span class="button-glow"></span>
+                CLAIM REWARD
+            </button>
+            <button id="backToDashboardBtn" class="result-button neon-purple">
+                <span class="button-glow"></span>
+                BACK TO DASHBOARD
+            </button>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
     <script src="result.js"></script>
 </body>

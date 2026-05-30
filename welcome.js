@@ -6,27 +6,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize storage
     initializeStorage();
     
-    const playerNameInput = document.getElementById('playerName');
-    const enterBtn = document.getElementById('enterBtn');
+    const hunterNameInput = document.getElementById('hunterNameInput');
+    const acceptQuestBtn = document.getElementById('acceptQuestBtn');
+    const enterGateBtn = document.getElementById('enterGateBtn');
     const messageBox = document.getElementById('messageBox');
     const statusRank = document.getElementById('statusRank');
     const statusMsg = document.getElementById('statusMsg');
     const questAccess = document.getElementById('questAccess');
     
     // Event Listeners
-    playerNameInput.addEventListener('input', updateStatusDisplay);
-    playerNameInput.addEventListener('keypress', (e) => {
+    hunterNameInput.addEventListener('input', updateStatusDisplay);
+    hunterNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') enterGate();
     });
-    enterBtn.addEventListener('click', enterGate);
+    acceptQuestBtn.addEventListener('click', enterGate);
+    enterGateBtn.addEventListener('click', enterGate);
     
     /**
      * อัปเดตการแสดงสถานะเมื่อกรอกชื่อ
      */
     function updateStatusDisplay() {
-        const playerName = playerNameInput.value.trim();
+        const hunterName = hunterNameInput.value.trim();
         
-        if (playerName.length === 0) {
+        if (hunterName.length === 0) {
             statusRank.textContent = 'Unregistered';
             statusMsg.textContent = 'Awaiting Awakening...';
             questAccess.textContent = 'Locked';
@@ -34,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const existingPlayer = getPlayerData(playerName);
+        const existingPlayer = getPlayerData(hunterName);
         
         if (existingPlayer) {
             // ผู้ใช้เก่า
@@ -53,42 +55,43 @@ document.addEventListener('DOMContentLoaded', () => {
      * ยูซารเข้าสู่ระบบ
      */
     function enterGate() {
-        const playerName = playerNameInput.value.trim();
+        const hunterName = hunterNameInput.value.trim();
         
         // Validation
-        if (playerName.length === 0) {
+        if (hunterName.length === 0) {
             showMessage('⚠️ กรุณาป้อนชื่อผู้ใช้', 'warning');
             return;
         }
         
-        if (playerName.length < 3) {
+        if (hunterName.length < 3) {
             showMessage('⚠️ ชื่อต้องไม่น้อยกว่า 3 ตัวอักษร', 'warning');
             return;
         }
         
-        if (playerName.length > 20) {
+        if (hunterName.length > 20) {
             showMessage('⚠️ ชื่อไม่ควรเกิน 20 ตัวอักษร', 'warning');
             return;
         }
         
         // ตรวจสอบผู้ใช้เก่า/ใหม่
-        const existingPlayer = getPlayerData(playerName);
+        const existingPlayer = getPlayerData(hunterName);
         
         if (existingPlayer) {
             // Welcome Back
-            showMessage(`✨ Welcome Back, ${playerName}!`, 'welcome');
-            console.log(`🎯 ผู้ใช้เก่า: ${playerName} (Rank ${existingPlayer.rank})`);
-            loginExistingPlayer(playerName);
+            showMessage(`✨ Welcome Back, ${hunterName}!`, 'welcome');
+            console.log(`🎯 ผู้ใช้เก่า: ${hunterName} (Rank ${existingPlayer.rank})`);
+            loginExistingPlayer(hunterName);
         } else {
             // New Hunter Registered
-            showMessage(`🌟 New Hunter Registered: ${playerName}`, 'welcome');
-            console.log(`✨ ผู้ใช้ใหม่: ${playerName}`);
-            createNewPlayer(playerName);
+            showMessage(`🌟 New Hunter Registered: ${hunterName}`, 'welcome');
+            console.log(`✨ ผู้ใช้ใหม่: ${hunterName}`);
+            createNewPlayer(hunterName);
         }
         
         // Lock inputs
-        playerNameInput.disabled = true;
-        enterBtn.disabled = true;
+        hunterNameInput.disabled = true;
+        acceptQuestBtn.disabled = true;
+        enterGateBtn.disabled = true;
         
         // Navigate after animation
         setTimeout(() => {
@@ -99,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * สร้างผู้ใช้ใหม่
      */
-    function createNewPlayer(playerName) {
+    function createNewPlayer(hunterName) {
         const newPlayer = {
-            name: playerName,
+            name: hunterName,
             rank: 'E',
             level: 1,
             exp: 0,
@@ -126,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         // บันทึกลง localStorage
-        savePlayerData(playerName, newPlayer);
-        localStorage.setItem('currentPlayer', playerName);
+        savePlayerData(hunterName, newPlayer);
+        localStorage.setItem('currentPlayer', hunterName);
         
         console.log('✓ ผู้ใช้ใหม่ถูกสร้างสำเร็จ:', newPlayer);
     }
@@ -135,17 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * เข้าสู่ระบบสำหรับผู้ใช้เก่า
      */
-    function loginExistingPlayer(playerName) {
-        const player = getPlayerData(playerName);
+    function loginExistingPlayer(hunterName) {
+        const player = getPlayerData(hunterName);
         
         // อัปเดตวันที่เล่นครั้งสุดท้าย
         player.lastPlayedDate = new Date().toLocaleString('th-TH');
         
         // บันทึกกลับลง localStorage
-        savePlayerData(playerName, player);
-        localStorage.setItem('currentPlayer', playerName);
+        savePlayerData(hunterName, player);
+        localStorage.setItem('currentPlayer', hunterName);
         
-        console.log('✓ ผู้ใช้เข้าสู่ระบบสำเร็จ:', playerName);
+        console.log('✓ ผู้ใช้เข้าสู่ระบบสำเร็จ:', hunterName);
     }
     
     /**
@@ -153,8 +156,17 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function showMessage(message, type = 'info') {
         messageBox.textContent = message;
-        messageBox.className = `message-box ${type}`;
+        messageBox.className = `alert-message ${type}`;
         messageBox.style.animation = 'messageSlide 0.5s ease-out';
+    }
+    
+    /**
+     * Initialize Storage
+     */
+    function initializeStorage() {
+        if (!localStorage.getItem('players')) {
+            localStorage.setItem('players', JSON.stringify({}));
+        }
     }
 });
 

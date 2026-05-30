@@ -3,50 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - STUDY GATE SYSTEM</title>
+    <title>Study Gate System - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="dashboard-container">
-        <!-- Header Section -->
-        <div class="dashboard-header">
-            <div>
-                <h1 class="header-title">⚔️ DASHBOARD</h1>
+<body class="dashboard-page">
+    <div class="particle-container">
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+    </div>
+
+    <div class="system-header">
+        <div class="header-title">
+            <span class="neon-cyan">SYSTEM INTERFACE</span>
+        </div>
+        <div class="header-welcome">
+            <span class="neon-purple">Welcome, </span>
+            <span class="neon-cyan" id="welcomeName">Hunter</span>
+        </div>
+        <div class="logout-area">
+            <button id="logoutBtn" class="logout-button neon-purple">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="dashboard-panels">
+        <div class="panel-left hologram-panel">
+            <div class="panel-header">
+                <h2 class="neon-purple">SKILLS</h2>
             </div>
-            <div class="header-user">
-                <div class="user-info">
-                    <p class="user-name" id="headerUserName">Hunter</p>
-                    <p class="user-rank" id="headerUserRank">Rank E - Level 1</p>
+            <div class="panel-content">
+                <div id="skillsContainer" class="skills-container">
+                    <!-- Skills will be injected here by dashboard.js -->
                 </div>
-                <button id="changeHunterBtn" class="btn-change-hunter">CHANGE HUNTER</button>
             </div>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="dashboard-grid">
-            <!-- Stats Card -->
-            <div id="statsContainer"></div>
-            
-            <!-- Status Grid -->
-            <div id="statusContainer"></div>
-            
-            <!-- Badges & Skills -->
-            <div id="badgesContainer"></div>
+        <div class="panel-center hologram-panel">
+            <div class="panel-header">
+                <h2 class="neon-cyan">QUEST CONTROL</h2>
+            </div>
+            <div class="panel-content">
+                <div id="questFormContainer" class="quest-form-container">
+                    <!-- Quest form will be injected here by dashboard.js -->
+                </div>
+            </div>
         </div>
 
-        <!-- Recent Quests -->
-        <div id="recentQuestsContainer"></div>
-
-        <!-- Quest Form -->
-        <div id="questFormContainer"></div>
-
-        <!-- Animated Particles -->
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle purple"></div>
-            <div class="particle"></div>
-            <div class="particle pink"></div>
-            <div class="particle"></div>
+        <div class="panel-right hologram-panel">
+            <div class="panel-header">
+                <h2 class="neon-cyan">STATUS</h2>
+            </div>
+            <div class="panel-content">
+                <div id="statusContainer" class="status-container">
+                    <!-- Status display will be injected here by dashboard.js -->
+                </div>
+            </div>
         </div>
     </div>
 

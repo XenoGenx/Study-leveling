@@ -3,20 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz - STUDY GATE SYSTEM</title>
+    <title>Study Gate System - Quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="quiz-container">
-        <div id="quizContainer"></div>
-        
-        <!-- Particles -->
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle purple"></div>
-            <div class="particle"></div>
-            <div class="particle pink"></div>
-            <div class="particle"></div>
+<body class="quiz-page">
+    <div class="particle-container">
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+    </div>
+
+    <div class="trial-panel">
+        <div class="trial-header">
+            <h1 class="neon-cyan">KNOWLEDGE TRIAL</h1>
+        </div>
+
+        <div class="trial-content">
+            <div id="quizContainer" class="quiz-container">
+                <!-- Quiz questions will be injected here by quiz.js -->
+            </div>
+        </div>
+
+        <div class="trial-actions">
+            <button id="submitBtn" class="quiz-button neon-cyan">
+                <span class="button-glow"></span>
+                SUBMIT ANSWER
+            </button>
+            <button id="skipBtn" class="quiz-button neon-purple">
+                <span class="button-glow"></span>
+                SKIP QUESTION
+            </button>
+        </div>
+
+        <div class="progress-indicator">
+            <span class="neon-purple">Progress: </span>
+            <span class="neon-cyan" id="progressText">1 / 3</span>
         </div>
     </div>
 
