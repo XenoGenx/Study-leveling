@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusMsg = document.getElementById('statusMsg');
     const questAccess = document.getElementById('questAccess');
     
+    // Set initial input focus z-index high
+    hunterNameInput.style.position = 'relative';
+    hunterNameInput.style.zIndex = '15';
+    
     // Event Listeners
     hunterNameInput.addEventListener('input', updateStatusDisplay);
     hunterNameInput.addEventListener('keypress', (e) => {

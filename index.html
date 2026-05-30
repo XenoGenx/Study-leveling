@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Gate System - Welcome Hunter</title>
+    <title>STUDY GATE SYSTEM - Welcome Hunter</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="notification-page">
+<body class="welcome-page">
+    <!-- DARK PORTAL BACKGROUND -->
+    <div class="portal-background">
+        <div class="portal-glow portal-glow-1"></div>
+        <div class="portal-glow portal-glow-2"></div>
+    </div>
+
+    <!-- PARTICLE SYSTEM -->
     <div class="particle-container">
         <div class="particle purple"></div>
         <div class="particle cyan"></div>
@@ -19,60 +26,91 @@
         <div class="particle blue"></div>
     </div>
 
-    <div class="notification-panel">
-        <div class="notification-header">
-            <div class="notification-label">
-                <span class="scan-line"></span>
-                NOTIFICATION
-                <span class="scan-line"></span>
-            </div>
-        </div>
+    <!-- SCAN LINES OVERLAY -->
+    <div class="scan-lines"></div>
 
-        <div class="notification-content">
-            <div class="hologram-message">
-                <h1 class="neon-cyan">You have been selected as a Study Hunter</h1>
-                <p class="neon-purple subtitle">กรอกชื่อของคุณเพื่อเข้าสู่ระบบภารกิจแห่งการเรียนรู้</p>
+    <!-- MAIN NOTIFICATION WINDOW -->
+    <div class="welcome-container">
+        <!-- Notification Window -->
+        <div class="notification-window">
+            <!-- Top Corner Accents -->
+            <div class="corner-accent corner-top-left"></div>
+            <div class="corner-accent corner-top-right"></div>
+            <div class="corner-accent corner-bottom-left"></div>
+            <div class="corner-accent corner-bottom-right"></div>
+
+            <!-- NOTIFICATION HEADER -->
+            <div class="notification-header">
+                <div class="notification-label">
+                    <span class="label-line"></span>
+                    <span>NOTIFICATION</span>
+                    <span class="label-line"></span>
+                </div>
             </div>
 
-            <div class="hunter-input-section">
+            <!-- MAIN TITLE -->
+            <div class="system-title-section">
+                <h1 class="system-title">STUDY GATE SYSTEM</h1>
+            </div>
+
+            <!-- MESSAGE CONTENT -->
+            <div class="notification-message">
+                <p class="message-en">You have been selected as a Study Hunter.</p>
+                <p class="message-th">กรอกชื่อของคุณเพื่อเข้าสู่ระบบภารกิจแห่งการเรียนรู้</p>
+            </div>
+
+            <!-- HUNTER NAME INPUT -->
+            <div class="input-wrapper">
                 <input 
                     type="text" 
                     id="hunterNameInput" 
-                    class="hunter-name-input neon-input" 
+                    class="hunter-name-input" 
                     placeholder="Enter your Hunter Name"
                     autocomplete="off"
+                    maxlength="20"
                 >
+                <div class="input-glow"></div>
             </div>
 
-            <div class="status-display">
-                <div class="status-item rank-display">
-                    <span class="status-label neon-purple">RANK:</span>
-                    <span class="status-value neon-cyan">F-CLASS</span>
+            <!-- STATUS DISPLAY BOX -->
+            <div class="status-box">
+                <div class="status-item">
+                    <span class="status-label">RANK:</span>
+                    <span class="status-value" id="statusRank">Unregistered</span>
                 </div>
-                <div class="status-item status-info">
-                    <span class="status-label neon-purple">STATUS:</span>
-                    <span class="status-value neon-cyan">READY</span>
+                <div class="status-item">
+                    <span class="status-label">STATUS:</span>
+                    <span class="status-value" id="statusMsg">Awaiting Awakening...</span>
                 </div>
-                <div class="status-item quest-access">
-                    <span class="status-label neon-purple">QUEST ACCESS:</span>
-                    <span class="status-value neon-cyan">UNLOCKED</span>
+                <div class="status-item">
+                    <span class="status-label">QUEST ACCESS:</span>
+                    <span class="status-value" id="questAccess">Locked</span>
                 </div>
             </div>
 
-            <div class="notification-actions">
-                <button id="acceptQuestBtn" class="quest-button neon-purple">
-                    <span class="button-glow"></span>
-                    ACCEPT QUEST
+            <!-- MESSAGE BOX -->
+            <div id="messageBox" class="message-box"></div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="button-group">
+                <button id="acceptQuestBtn" class="btn-primary btn-hologram">
+                    <span class="btn-inner">
+                        <span class="btn-text">ACCEPT QUEST</span>
+                        <span class="btn-glow-line"></span>
+                    </span>
                 </button>
-                <button id="enterGateBtn" class="quest-button neon-cyan">
-                    <span class="button-glow"></span>
-                    ENTER THE GATE
+                <button id="enterGateBtn" class="btn-secondary btn-hologram">
+                    <span class="btn-inner">
+                        <span class="btn-text">ENTER THE GATE</span>
+                        <span class="btn-glow-line"></span>
+                    </span>
                 </button>
             </div>
-        </div>
 
-        <div class="notification-footer">
-            <span class="neon-purple opacity-50">SYSTEM INITIALIZED</span>
+            <!-- SYSTEM FOOTER -->
+            <div class="notification-footer">
+                <span class="footer-text">SYSTEM INITIALIZED</span>
+            </div>
         </div>
     </div>
 
