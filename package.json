@@ -1,0 +1,13 @@
+{
+  "name": "study-gate-system",
+  "version": "1.0.0",
+  "description": "RPG Quest System for Reading Time Tracking",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "keywords": ["rpg", "quest", "reading", "timer", "gamification"],
+  "author": "POSN Student",
+  "license": "MIT"
+}
