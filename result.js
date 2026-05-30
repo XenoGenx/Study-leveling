@@ -1,307 +1,316 @@
 /* ========================================
-   STUDY GATE SYSTEM - RESULT PAGE SCRIPT
+   RESULT PAGE - REWARDS & DATA PERSISTENCE
+   Quest completion, EXP gain, badge unlock
    ======================================== */
 
-let currentPlayer = null;
-let currentChapter = null;
-let quizScore = 0;
-let quizTotal = 10;
-let quizPercentage = 0;
-let readingTime = 0;
+document.addEventListener('DOMContentLoaded', () => {
+    displayResults();
+    setupEventListeners();
+});
 
-// โหลดข้อมูล
-window.addEventListener('load', () => {
-    const playerName = localStorage.getItem('currentPlayer');
-
-    if (!playerName) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    currentPlayer = players[playerName];
-    currentChapter = localStorage.getItem('sessionChapter');
-
+/**
+ * Display Results
+ */
+function displayResults() {
+    const currentPlayer = localStorage.getItem('currentPlayer');
+    
     if (!currentPlayer) {
         window.location.href = 'index.html';
         return;
     }
-
-    // โหลดข้อมูลจากที่บันทึก
-    quizScore = parseInt(localStorage.getItem('quizScore')) || 0;
-    quizTotal = parseInt(localStorage.getItem('quizTotal')) || 10;
-    quizPercentage = parseFloat(localStorage.getItem('quizPercentage')) || 0;
-    readingTime = parseInt(localStorage.getItem('readingTime')) || 0;
-
-    displayResults();
-    calculateRewards();
-    updatePlayerData();
-});
-
-function displayResults() {
-    const chapterNames = {
-        respiratory: 'ระบบหายใจ',
-        chemical: 'พันธะเคมี',
-        probability: 'ความน่าจะเป็น',
-        vocabulary: 'Vocabulary'
-    };
-
-    document.getElementById('playerName').textContent = currentPlayer.name;
-    document.getElementById('chapterName').textContent = chapterNames[currentChapter];
-    document.getElementById('readingTime').textContent = readingTime + ' min';
-
-    document.getElementById('scoreValue').textContent = quizScore;
-    document.getElementById('scoreTotal').textContent = quizTotal;
-    document.getElementById('percentageText').textContent = quizPercentage.toFixed(0) + '%';
-
-    const scorePercent = (quizScore / quizTotal) * 100;
-    document.getElementById('scoreFill').style.width = scorePercent + '%';
-}
-
-function calculateRewards() {
-    // Base EXP จากการอ่านครบ
-    let expGain = 50;
-
-    // EXP เพิ่มจากคะแนนสอบ
-    if (quizPercentage >= 80) expGain += 50;
-    else if (quizPercentage >= 60) expGain += 30;
-    else if (quizPercentage >= 40) expGain += 15;
-
-    // EXP เพิ่มจากเวลา
-    if (readingTime >= 25) expGain += 30;
-    else if (readingTime >= 20) expGain += 20;
-
-    // Status Changes
-    let focusGain = Math.ceil(readingTime / 5);
-    let memoryGain = Math.ceil((quizPercentage / 100) * 15);
-    let understandingGain = Math.ceil((quizPercentage / 100) * 15);
-    let accuracyGain = quizScore;
-    let masteryGain = Math.ceil(quizPercentage / 10);
-
-    // Mastery calculation
-    const oldMastery = currentPlayer.chapterMastery[currentChapter] || 0;
-    const newMastery = Math.min(100, oldMastery + masteryGain);
-
-    // Display rewards
-    document.getElementById('expAmount').textContent = expGain;
-    document.getElementById('focusChange').textContent = '+' + focusGain;
-    document.getElementById('memoryChange').textContent = '+' + memoryGain;
-    document.getElementById('understandingChange').textContent = '+' + understandingGain;
-    document.getElementById('accuracyChange').textContent = '+' + accuracyGain;
-    document.getElementById('masteryChange').textContent = '+' + masteryGain;
-
-    // Mastery display
-    let masteryText = 'Not Cleared';
-    if (newMastery >= 95) masteryText = 'Perfect Clear';
-    else if (newMastery >= 80) masteryText = 'Mastered';
-    else if (newMastery >= 60) masteryText = 'Skilled';
-    else if (newMastery >= 40) masteryText = 'Basic';
-
-    document.getElementById('masteryLevel').textContent = masteryText;
-    document.getElementById('masteryPercent').textContent = newMastery + '%';
-    document.getElementById('masteryBar').style.width = newMastery + '%';
-
-    // บันทึกข้อมูลชั่วคราว
-    localStorage.setItem('tempExpGain', expGain.toString());
-    localStorage.setItem('tempFocusGain', focusGain.toString());
-    localStorage.setItem('tempMemoryGain', memoryGain.toString());
-    localStorage.setItem('tempUnderstandingGain', understandingGain.toString());
-    localStorage.setItem('tempAccuracyGain', accuracyGain.toString());
-    localStorage.setItem('tempMasteryGain', masteryGain.toString());
-    localStorage.setItem('tempNewMastery', newMastery.toString());
-    localStorage.setItem('tempOldMastery', oldMastery.toString());
-
-    // Check for new badges and skills
-    checkNewRewards(quizPercentage, readingTime, quizScore, quizTotal);
-
-    // Set motivation message
-    setMotivationMessage(quizPercentage, readingTime);
-}
-
-function checkNewRewards(percentage, time, score, total) {
-    let newBadges = [];
-    let newSkills = [];
-
-    // Badge conditions
-    if (!currentPlayer.badges.includes('First Clear') && currentPlayer.questsCompleted === 0) {
-        newBadges.push('First Clear');
-    }
-    if (time >= 25 && !currentPlayer.badges.includes('Focus Hunter')) {
-        newBadges.push('Focus Hunter');
-    }
-    if (percentage === 100 && !currentPlayer.badges.includes('Perfect Memory')) {
-        newBadges.push('Perfect Memory');
-    }
-
-    // Skill conditions
-    if (percentage >= 80 && !currentPlayer.skillCards.includes('Deep Focus')) {
-        newSkills.push('Deep Focus');
-    }
-    if (percentage >= 90 && !currentPlayer.skillCards.includes('Knowledge Blade')) {
-        newSkills.push('Knowledge Blade');
-    }
-
-    // Display new badges
-    if (newBadges.length > 0) {
-        document.getElementById('badgeSection').style.display = 'block';
-        document.getElementById('newBadges').innerHTML = newBadges.map(b => 
-            `<div class="new-badge">🏆 ${b}</div>`
-        ).join('');
-        localStorage.setItem('tempNewBadges', JSON.stringify(newBadges));
-    }
-
-    // Display new skills
-    if (newSkills.length > 0) {
-        document.getElementById('skillSection').style.display = 'block';
-        document.getElementById('newSkills').innerHTML = newSkills.map(s => 
-            `<div class="new-skill">✨ ${s}</div>`
-        ).join('');
-        localStorage.setItem('tempNewSkills', JSON.stringify(newSkills));
-    }
-
-    // Check rank up
-    const oldExp = currentPlayer.exp;
-    const tempExp = oldExp + parseInt(localStorage.getItem('tempExpGain') || 0);
-    const oldRank = calculateRank(oldExp);
-    const newRank = calculateRank(tempExp);
     
-    if (newRank !== oldRank) {
-        document.getElementById('rankUpSection').style.display = 'block';
-        document.getElementById('oldRank').textContent = oldRank;
-        document.getElementById('newRank').textContent = newRank;
-        localStorage.setItem('tempRankUp', 'true');
+    const player = getPlayerData(currentPlayer);
+    const readingTime = parseInt(sessionStorage.getItem('readingTime')) || 0;
+    const questData = JSON.parse(sessionStorage.getItem('currentQuest')) || {};
+    const quizPercentage = parseInt(sessionStorage.getItem('quizPercentage')) || 0;
+    const quizSkipped = sessionStorage.getItem('quizSkipped') === 'true';
+    
+    // Calculate rewards
+    const rewards = calculateRewards(readingTime, questData.questTime, questData.questDifficulty, quizPercentage);
+    const newBadges = checkBadgeUnlock(player, readingTime, questData.questTime, quizPercentage, calculateStudyStreak(player));
+    const newSkills = checkSkillUnlock(player, quizPercentage);
+    const rankUpInfo = checkRankUp(player.exp, player.exp + rewards.totalExp);
+    
+    // Store for claiming
+    sessionStorage.setItem('pendingRewards', JSON.stringify({
+        readingTime,
+        questData,
+        quizPercentage,
+        rewards,
+        newBadges,
+        newSkills,
+        rankUpInfo
+    }));
+    
+    // Display results
+    const container = document.getElementById('resultContainer');
+    if (!container) return;
+    
+    let html = `
+        <div class="result-panel">
+            <div class="result-header">QUEST COMPLETE!</div>
+            
+            <!-- Quest Info -->
+            <div class="reward-card">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h2 style="color: var(--cyan); font-size: 1.5rem; margin-bottom: 10px;">${questData.questName}</h2>
+                    <p style="color: var(--purple);">Difficulty: ${questData.questDifficulty.toUpperCase()}</p>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">⏱️ Reading Time:</span>
+                    <span class="reward-value">${readingTime} / ${questData.questTime} min</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">📊 Quiz Score:</span>
+                    <span class="reward-value">${quizSkipped ? 'SKIPPED' : quizPercentage + '%'}</span>
+                </div>
+            </div>
+            
+            <!-- Rewards -->
+            <div class="reward-card">
+                <h3 style="color: var(--cyan); margin-bottom: 15px; font-size: 1.1rem;">🏆 REWARDS EARNED</h3>
+                
+                <div class="reward-item">
+                    <span class="reward-label">💰 Base EXP:</span>
+                    <span class="reward-value">+${rewards.baseExp}</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">⭐ Bonus EXP:</span>
+                    <span class="reward-value positive">+${rewards.bonusExp}</span>
+                </div>
+                
+                <div class="reward-item" style="border-top: 2px solid rgba(0, 212, 255, 0.2); padding-top: 10px; margin-top: 10px;">
+                    <span class="reward-label">🎯 TOTAL EXP:</span>
+                    <span class="reward-value positive" style="font-size: 1.5rem;">+${rewards.totalExp}</span>
+                </div>
+            </div>
+            
+            <!-- Status Increases -->
+            <div class="reward-card">
+                <h3 style="color: var(--cyan); margin-bottom: 15px; font-size: 1.1rem;">📈 STATUS INCREASE</h3>
+                
+                <div class="reward-item">
+                    <span class="reward-label">🎯 Focus:</span>
+                    <span class="reward-value positive">+${Math.ceil(readingTime / 5)}</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">🧠 Memory:</span>
+                    <span class="reward-value positive">+${Math.ceil(quizPercentage / 10)}</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">📚 Understanding:</span>
+                    <span class="reward-value positive">+${Math.ceil(quizPercentage / 8)}</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">✅ Accuracy:</span>
+                    <span class="reward-value positive">+${Math.ceil(quizPercentage / 12)}</span>
+                </div>
+                
+                <div class="reward-item">
+                    <span class="reward-label">👑 Mastery:</span>
+                    <span class="reward-value positive">+${Math.ceil(quizPercentage / 15)}</span>
+                </div>
+            </div>
+    `;
+    
+    // Badges
+    if (newBadges.length > 0) {
+        html += `
+            <div class="reward-card">
+                <h3 style="color: var(--purple); margin-bottom: 15px; font-size: 1.1rem;">🏅 NEW BADGES UNLOCKED!</h3>
+                <div class="badges-grid">
+        `;
+        
+        newBadges.forEach(badge => {
+            html += `
+                <div class="badge-item">
+                    <div class="badge-icon">${badge.icon || '🎖️'}</div>
+                    <div class="badge-name">${badge.name}</div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    
+    // Skills
+    if (newSkills.length > 0) {
+        html += `
+            <div class="reward-card">
+                <h3 style="color: var(--blue); margin-bottom: 15px; font-size: 1.1rem;">⚡ NEW SKILLS UNLOCKED!</h3>
+                <div class="badges-grid">
+        `;
+        
+        newSkills.forEach(skill => {
+            html += `
+                <div class="badge-item" style="background: rgba(74, 144, 255, 0.15); border-color: rgba(74, 144, 255, 0.3);">
+                    <div class="badge-icon">${skill.icon || '⚔️'}</div>
+                    <div class="badge-name">${skill.name}</div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    
+    // Rank Up
+    if (rankUpInfo.rankedUp) {
+        html += `
+            <div class="reward-card" style="background: linear-gradient(135deg, rgba(0, 255, 100, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%); border: 2px solid #00ff64;">
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2rem; color: #00ff64; font-weight: 900; margin-bottom: 10px;">🎊 RANK UP! 🎊</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 5px;">You've been promoted from</p>
+                    <p style="color: var(--purple); font-size: 1.1rem; font-weight: 700; margin-bottom: 5px;">Rank ${rankUpInfo.oldRank}</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 5px;">to</p>
+                    <p style="color: #00ff64; font-size: 1.3rem; font-weight: 900;">${rankUpInfo.newRankName}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Motivation Message
+    const motivationMsg = getMotivationalMessage(quizPercentage, readingTime, questData.questTime, calculateStudyStreak(player));
+    
+    html += `
+            <div class="motivation-message">
+                "${motivationMsg}"
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="claimBtn" class="btn-claim">CLAIM REWARD</button>
+                <button id="backBtn" class="btn-back">BACK TO DASHBOARD</button>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+/**
+ * Calculate Rewards
+ */
+function calculateRewards(readingTime, targetTime, difficulty, quizPercentage) {
+    const exp = calculateQuestExp(readingTime, targetTime, difficulty, quizPercentage, 0);
+    return exp;
+}
+
+/**
+ * Setup Event Listeners
+ */
+function setupEventListeners() {
+    const claimBtn = document.getElementById('claimBtn');
+    const backBtn = document.getElementById('backBtn');
+    
+    if (claimBtn) {
+        claimBtn.addEventListener('click', claimReward);
+    }
+    
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'dashboard.html';
+        });
     }
 }
 
-function calculateRank(exp) {
-    if (exp >= 3000) return 'S';
-    if (exp >= 2000) return 'A';
-    if (exp >= 1200) return 'B';
-    if (exp >= 700) return 'C';
-    if (exp >= 300) return 'D';
-    return 'E';
-}
-
-function setMotivationMessage(percentage, time) {
-    let messages = [];
-
-    if (percentage >= 80) {
-        messages = [
-            '✨ ยอดเยี่ยม Hunter! คุณเข้าใจบทเรียนนี้ในระดับสูงแล้ว',
-            '🌟 ความพยายามของคุณเปลี่ยนเป็นพลัง ความรู้ของคุณแข็งแกร่งขึ้น',
-            '⚡ Perfect Clear ใกล้แค่เอื้อม คุณกำลังพัฒนาเร็วมาก'
-        ];
-    } else if (percentage >= 60) {
-        messages = [
-            '💪 คุณทำได้ดีแล้ว เหลือเพียงทบทวนอีกเล็กน้อยก็จะชำนาญขึ้น',
-            '🎯 ทุกเควสที่สำเร็จคือหลักฐานว่าคุณกำลังก้าวหน้า',
-            '🔥 วันนี้คุณชนะความขี้เกียจได้แล้ว จงไปต่อ'
-        ];
+/**
+ * Claim Reward - Update Player Data
+ */
+function claimReward() {
+    const currentPlayer = localStorage.getItem('currentPlayer');
+    const player = getPlayerData(currentPlayer);
+    const rewards = JSON.parse(sessionStorage.getItem('pendingRewards')) || {};
+    
+    if (!rewards.rewards) return;
+    
+    // Update EXP
+    player.exp += rewards.rewards.totalExp;
+    
+    // Update Rank & Level
+    player.rank = calculateRank(player.exp);
+    player.level = calculateLevel(player.exp);
+    
+    // Update Status
+    player.focus += Math.ceil(rewards.readingTime / 5);
+    player.memory += Math.ceil(rewards.quizPercentage / 10);
+    player.understanding += Math.ceil(rewards.quizPercentage / 8);
+    player.accuracy += Math.ceil(rewards.quizPercentage / 12);
+    player.mastery += Math.ceil(rewards.quizPercentage / 15);
+    
+    // Add to quest history
+    const questEntry = {
+        questName: rewards.questData.questName,
+        questDifficulty: rewards.questData.questDifficulty,
+        readingTime: rewards.readingTime,
+        targetTime: rewards.questData.questTime,
+        quizPercentage: rewards.quizPercentage,
+        expGained: rewards.rewards.totalExp,
+        date: new Date().toISOString()
+    };
+    
+    if (!player.readingHistory) player.readingHistory = [];
+    player.readingHistory.push(questEntry);
+    
+    // Add badges
+    if (rewards.newBadges && rewards.newBadges.length > 0) {
+        if (!player.badges) player.badges = [];
+        rewards.newBadges.forEach(badge => {
+            if (!player.badges.find(b => b.id === badge.id)) {
+                player.badges.push(badge);
+            }
+        });
+    }
+    
+    // Add skills
+    if (rewards.newSkills && rewards.newSkills.length > 0) {
+        if (!player.skillCards) player.skillCards = [];
+        rewards.newSkills.forEach(skill => {
+            if (!player.skillCards.find(s => s.id === skill.id)) {
+                player.skillCards.push(skill);
+            }
+        });
+    }
+    
+    // Update quest count
+    player.questsCompleted = (player.questsCompleted || 0) + 1;
+    player.totalStudyTime = (player.totalStudyTime || 0) + rewards.readingTime;
+    
+    // Update streak
+    const lastPlayDate = player.lastPlayedDate ? new Date(player.lastPlayedDate) : new Date();
+    const today = new Date();
+    const dayDiff = Math.floor((today - lastPlayDate) / (1000 * 60 * 60 * 24));
+    
+    if (dayDiff === 0) {
+        player.streak = (player.streak || 0); // Same day
+    } else if (dayDiff === 1) {
+        player.streak = (player.streak || 0) + 1; // Consecutive day
     } else {
-        messages = [
-            '🛡️ ไม่เป็นไร Hunter ความพ่ายแพ้ครั้งนี้คือข้อมูลสำหรับการกลับมาใหม่',
-            '🌱 คะแนนยังไม่ใช่จุดจบ ลองทบทวนแล้วกลับมาท้าทายเควสนี้อีกครั้ง',
-            '⭐ คุณยังได้รับ EXP จากความพยายาม และครั้งหน้าคุณจะแข็งแกร่งขึ้น'
-        ];
+        player.streak = 1; // New streak
     }
-
-    if (time >= 25) {
-        messages.push('🎖️ คุณอ่านครบตามเป้าหมายแล้ว วินัยของคุณเพิ่มขึ้น');
-        messages.push('🧠 ภารกิจสำเร็จ สมาธิของคุณแข็งแกร่งกว่าก่อนเริ่มอ่าน');
+    
+    player.lastPlayedDate = new Date().toLocaleString('th-TH');
+    
+    // Save player
+    savePlayerData(currentPlayer, player);
+    
+    console.log('✓ Reward claimed and player data updated:', player);
+    
+    // Show success message
+    const claimBtn = document.getElementById('claimBtn');
+    if (claimBtn) {
+        claimBtn.textContent = '✓ REWARD CLAIMED!';
+        claimBtn.style.background = 'linear-gradient(135deg, #00ff64 0%, var(--cyan) 100%)';
+        claimBtn.disabled = true;
     }
-
-    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-    document.getElementById('motivationMsg').textContent = randomMsg;
+    
+    // Redirect after 2 seconds
+    setTimeout(() => {
+        window.location.href = 'dashboard.html';
+    }, 2000);
 }
-
-function updatePlayerData() {
-    const expGain = parseInt(localStorage.getItem('tempExpGain') || 0);
-    const focusGain = parseInt(localStorage.getItem('tempFocusGain') || 0);
-    const memoryGain = parseInt(localStorage.getItem('tempMemoryGain') || 0);
-    const understandingGain = parseInt(localStorage.getItem('tempUnderstandingGain') || 0);
-    const accuracyGain = parseInt(localStorage.getItem('tempAccuracyGain') || 0);
-    const masteryGain = parseInt(localStorage.getItem('tempMasteryGain') || 0);
-    const newMastery = parseInt(localStorage.getItem('tempNewMastery') || 0);
-    const newBadges = JSON.parse(localStorage.getItem('tempNewBadges') || '[]');
-    const newSkills = JSON.parse(localStorage.getItem('tempNewSkills') || '[]');
-
-    // เก็บข้อมูลชั่วคราวไว้กด Claim
-    localStorage.setItem('pendingUpdate', 'true');
-}
-
-// Claim Reward Button
-document.getElementById('claimBtn').addEventListener('click', () => {
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    const expGain = parseInt(localStorage.getItem('tempExpGain') || 0);
-    const focusGain = parseInt(localStorage.getItem('tempFocusGain') || 0);
-    const memoryGain = parseInt(localStorage.getItem('tempMemoryGain') || 0);
-    const understandingGain = parseInt(localStorage.getItem('tempUnderstandingGain') || 0);
-    const accuracyGain = parseInt(localStorage.getItem('tempAccuracyGain') || 0);
-    const masteryGain = parseInt(localStorage.getItem('tempMasteryGain') || 0);
-    const newMastery = parseInt(localStorage.getItem('tempNewMastery') || 0);
-    const newBadges = JSON.parse(localStorage.getItem('tempNewBadges') || '[]');
-    const newSkills = JSON.parse(localStorage.getItem('tempNewSkills') || '[]');
-
-    // อัปเดต EXP
-    currentPlayer.exp += expGain;
-
-    // อัปเดต Rank & Level
-    currentPlayer.rank = calculateRank(currentPlayer.exp);
-    currentPlayer.level = Math.floor(currentPlayer.exp / 300) + 1;
-
-    // อัปเดต Status
-    currentPlayer.focus += focusGain;
-    currentPlayer.memory += memoryGain;
-    currentPlayer.understanding += understandingGain;
-    currentPlayer.accuracy += accuracyGain;
-    currentPlayer.mastery += masteryGain;
-
-    // อัปเดต Mastery
-    currentPlayer.chapterMastery[currentChapter] = newMastery;
-
-    // เพิ่ม Badge & Skills
-    currentPlayer.badges = [...new Set([...currentPlayer.badges, ...newBadges])];
-    currentPlayer.skillCards = [...new Set([...currentPlayer.skillCards, ...newSkills])];
-
-    // บันทึก Reading History
-    if (!currentPlayer.readingHistory) currentPlayer.readingHistory = [];
-    currentPlayer.readingHistory.push({
-        chapter: currentChapter,
-        readingTime: readingTime,
-        score: quizScore,
-        date: new Date().toLocaleString('th-TH')
-    });
-
-    // เพิ่ม Quest Count
-    currentPlayer.questsCompleted++;
-
-    // บันทึก Players
-    players[currentPlayer.name] = currentPlayer;
-    localStorage.setItem('players', JSON.stringify(players));
-
-    // ล้างข้อมูลชั่วคราว
-    localStorage.removeItem('readingTime');
-    localStorage.removeItem('sessionChapter');
-    localStorage.removeItem('quizScore');
-    localStorage.removeItem('quizTotal');
-    localStorage.removeItem('quizPercentage');
-    localStorage.removeItem('tempExpGain');
-    localStorage.removeItem('tempFocusGain');
-    localStorage.removeItem('tempMemoryGain');
-    localStorage.removeItem('tempUnderstandingGain');
-    localStorage.removeItem('tempAccuracyGain');
-    localStorage.removeItem('tempMasteryGain');
-    localStorage.removeItem('tempNewMastery');
-    localStorage.removeItem('tempNewBadges');
-    localStorage.removeItem('tempNewSkills');
-    localStorage.removeItem('tempRankUp');
-    localStorage.removeItem('pendingUpdate');
-
-    alert('🎉 Rewards Claimed!');
-    document.getElementById('claimBtn').disabled = true;
-});
-
-// Continue Button
-document.getElementById('continueBtn').addEventListener('click', () => {
-    window.location.href = 'dashboard.html';
-});

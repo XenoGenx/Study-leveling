@@ -1,216 +1,227 @@
 /* ========================================
-   STUDY GATE SYSTEM - TIMER PAGE SCRIPT
+   TIMER PAGE - FOCUS MODE
+   Countdown timer with focus elimination
    ======================================== */
 
-// Timer variables
-let timeRemaining = 25 * 60; // 25 minutes in seconds
-let initialTime = timeRemaining;
 let timerInterval = null;
+let timeRemaining = 0;
+let totalTime = 0;
 let isRunning = false;
 let isPaused = false;
-let currentPlayer = null;
-let currentChapter = null;
+let startTime = 0;
+let pausedTime = 0;
 
-// ตรวจสอบ Player และ Chapter
-window.addEventListener('load', () => {
-    const playerName = localStorage.getItem('currentPlayer');
-    const chapter = localStorage.getItem('currentChapter');
+document.addEventListener('DOMContentLoaded', () => {
+    initializeTimer();
+    setupEventListeners();
+});
 
-    if (!playerName || !chapter) {
+/**
+ * Initialize Timer
+ */
+function initializeTimer() {
+    const questData = JSON.parse(sessionStorage.getItem('currentQuest'));
+    
+    if (!questData) {
+        console.error('No quest data found');
         window.location.href = 'dashboard.html';
         return;
     }
-
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    currentPlayer = players[playerName];
-    currentChapter = chapter;
-
-    if (!currentPlayer) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    // Update Display
-    document.getElementById('playerName').textContent = currentPlayer.name;
     
-    const chapterNames = {
-        respiratory: 'ระบบหายใจ',
-        chemical: 'พันธะเคมี',
-        probability: 'ความน่าจะเป็น',
-        vocabulary: 'Vocabulary'
-    };
-
-    document.getElementById('chapterTitle').textContent = chapterNames[chapter];
-    document.getElementById('chapterName').textContent = chapterNames[chapter];
-
+    // Set quest info
+    const questName = document.getElementById('questName');
+    const questDifficulty = document.getElementById('questDifficulty');
+    
+    if (questName) questName.textContent = questData.questName;
+    if (questDifficulty) questDifficulty.textContent = questData.questDifficulty.toUpperCase();
+    
+    // Set timer
+    totalTime = questData.questTime * 60; // Convert minutes to seconds
+    timeRemaining = totalTime;
+    
     updateTimerDisplay();
-});
+}
 
-// Update Timer Display
+/**
+ * Update Timer Display
+ */
 function updateTimerDisplay() {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
-
-    document.getElementById('timerMinutes').textContent = String(minutes).padStart(2, '0');
-    document.getElementById('timerSeconds').textContent = String(seconds).padStart(2, '0');
-
-    // Update Progress Bar
-    const progress = ((initialTime - timeRemaining) / initialTime) * 100;
-    document.getElementById('readingProgress').style.width = progress + '%';
-
-    // Update SVG Circle Progress
-    const circumference = 2 * Math.PI * 90;
-    const offset = circumference - (progress / 100) * circumference;
-    document.getElementById('timerProgress').style.strokeDashoffset = offset;
+    
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (timerDisplay) {
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    
+    // Update progress bar
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) {
+        const percent = ((totalTime - timeRemaining) / totalTime) * 100;
+        progressFill.style.width = percent + '%';
+    }
+    
+    // Color change when low time
+    if (timeRemaining < 60 && timeRemaining > 0) {
+        if (timerDisplay) timerDisplay.style.color = '#ff006e';
+    }
 }
 
-// Start Button
-document.getElementById('startBtn').addEventListener('click', () => {
-    startTimer();
-});
+/**
+ * Setup Event Listeners
+ */
+function setupEventListeners() {
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const finishBtn = document.getElementById('finishBtn');
+    
+    if (startBtn) startBtn.addEventListener('click', startTimer);
+    if (pauseBtn) pauseBtn.addEventListener('click', togglePause);
+    if (finishBtn) finishBtn.addEventListener('click', finishQuest);
+}
 
-// Pause Button
-document.getElementById('pauseBtn').addEventListener('click', () => {
-    pauseTimer();
-});
-
-// Resume Button
-document.getElementById('resumeBtn').addEventListener('click', () => {
-    resumeTimer();
-});
-
-// Finish Button
-document.getElementById('finishBtn').addEventListener('click', () => {
-    finishReading();
-});
-
-// Back Button
-document.getElementById('backBtn').addEventListener('click', () => {
-    if (isRunning || isPaused) {
-        if (confirm('คุณแน่ใจหรือว่าต้องการออกจากเควส? ความพยายามจะสูญหายไป')) {
-            stopTimer();
-            window.location.href = 'dashboard.html';
-        }
-    } else {
-        window.location.href = 'dashboard.html';
-    }
-});
-
+/**
+ * Start Timer
+ */
 function startTimer() {
     if (isRunning) return;
-
-    isRunning = true;
-    isPaused = false;
-
-    document.getElementById('startBtn').disabled = true;
-    document.getElementById('pauseBtn').disabled = false;
-    document.getElementById('finishBtn').disabled = false;
-    document.getElementById('focusMode').textContent = 'ACTIVE 🔥';
-
-    document.getElementById('statusText').textContent = 'Quest in Progress...';
-    updateMotivation('reading');
-
-    timerInterval = setInterval(() => {
-        if (timeRemaining > 0) {
-            timeRemaining--;
-            updateTimerDisplay();
-        } else {
-            completeTimer();
-        }
-    }, 1000);
-}
-
-function pauseTimer() {
-    if (!isRunning) return;
-
-    isRunning = false;
-    isPaused = true;
-    clearInterval(timerInterval);
-
-    document.getElementById('pauseBtn').style.display = 'none';
-    document.getElementById('resumeBtn').style.display = 'block';
-    document.getElementById('statusText').textContent = 'Paused...';
-    document.getElementById('focusMode').textContent = 'PAUSED';
-
-    updateMotivation('paused');
-}
-
-function resumeTimer() {
-    if (!isPaused) return;
-
-    isRunning = true;
-    isPaused = false;
-
-    document.getElementById('pauseBtn').style.display = 'block';
-    document.getElementById('resumeBtn').style.display = 'none';
-    document.getElementById('statusText').textContent = 'Quest Resumed...';
-    document.getElementById('focusMode').textContent = 'ACTIVE 🔥';
-
-    updateMotivation('reading');
-
-    timerInterval = setInterval(() => {
-        if (timeRemaining > 0) {
-            timeRemaining--;
-            updateTimerDisplay();
-        } else {
-            completeTimer();
-        }
-    }, 1000);
-}
-
-function stopTimer() {
-    isRunning = false;
-    isPaused = false;
-    clearInterval(timerInterval);
-    document.getElementById('pauseBtn').disabled = true;
-    document.getElementById('finishBtn').disabled = true;
-    document.getElementById('focusMode').textContent = 'Inactive';
-}
-
-function completeTimer() {
-    stopTimer();
-    document.getElementById('statusText').textContent = '⏰ TIME\'S UP! ได้เวลาไปทำข้อสอบแล้ว';
-    document.getElementById('finishBtn').textContent = 'GO TO QUIZ';
-    document.getElementById('finishBtn').disabled = false;
-    updateMotivation('complete');
-}
-
-function finishReading() {
-    stopTimer();
-
-    // คำนวณเวลาอ่านจริง
-    const actualReadingTime = 25 - Math.ceil(timeRemaining / 60);
     
-    // บันทึกข้อมูล
-    localStorage.setItem('readingTime', actualReadingTime.toString());
-    localStorage.setItem('sessionChapter', currentChapter);
-
-    // ไปหน้า Quiz
-    window.location.href = 'quiz.html';
+    isRunning = true;
+    startTime = Date.now() - pausedTime;
+    
+    const startBtn = document.getElementById('startBtn');
+    if (startBtn) {
+        startBtn.textContent = 'PAUSE';
+        startBtn.style.display = 'none';
+    }
+    
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) pauseBtn.style.display = 'inline-block';
+    
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        // Play warning sound when 60 seconds left
+        if (timeRemaining === 60) {
+            playWarningSound();
+        }
+        
+        // Timer finished
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            finishTimerAutomatically();
+        }
+    }, 1000);
 }
 
-function updateMotivation(stage) {
-    const motivations = {
-        reading: [
-            '✨ Focus Mode Activated - Do not give up, Hunter!',
-            '📚 ความสมาธิของคุณเพิ่มขึ้น',
-            '🔥 ผู้ล่าที่แข็งแกร่ง ไม่ยอมแพ้ต่อความยากจน',
-            '🎯 จิตใจของคุณดุจเพชร ล้นเหลือไปด้วยปณหา'
-        ],
-        paused: [
-            '⏸️ พยายามต่อไป คุณใกล้ถึงเป้าหมายแล้ว',
-            '💪 เพียงครู่หนึ่ง แล้วคุณจะกลับมาแข็งแกร่งขึ้น'
-        ],
-        complete: [
-            '🎉 ยอดเยี่ยม! คุณสำเร็จแล้ว เตรียมพร้อมสำหรับคำถาม',
-            '⚡ พลังแห่งความรู้พร้อมไหลเข้าสู่จิตใจของคุณ'
-        ]
-    };
-
-    const msgs = motivations[stage] || motivations.reading;
-    const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
-    document.getElementById('motivationText').textContent = randomMsg;
+/**
+ * Toggle Pause/Resume
+ */
+function togglePause() {
+    if (!isRunning) {
+        startTimer();
+        return;
+    }
+    
+    const pauseBtn = document.getElementById('pauseBtn');
+    
+    if (isPaused) {
+        // Resume
+        isPaused = false;
+        pausedTime = 0;
+        startTimer();
+        if (pauseBtn) pauseBtn.textContent = 'PAUSE';
+    } else {
+        // Pause
+        isPaused = true;
+        isRunning = false;
+        clearInterval(timerInterval);
+        pausedTime = Date.now() - startTime;
+        if (pauseBtn) pauseBtn.textContent = 'RESUME';
+    }
 }
 
-// Auto-update timer display on load
-updateTimerDisplay();
+/**
+ * Finish Quest
+ */
+function finishQuest() {
+    clearInterval(timerInterval);
+    
+    const questData = JSON.parse(sessionStorage.getItem('currentQuest'));
+    const actualReadingTime = totalTime - timeRemaining; // seconds
+    const actualReadingMinutes = Math.ceil(actualReadingTime / 60);
+    
+    // Save reading time
+    sessionStorage.setItem('readingTime', actualReadingMinutes);
+    sessionStorage.setItem('readingSeconds', actualReadingTime);
+    
+    console.log(`✓ Quest finished! Reading time: ${actualReadingMinutes} minutes`);
+    
+    // Navigate to quiz
+    setTimeout(() => {
+        window.location.href = 'quiz.html';
+    }, 500);
+}
+
+/**
+ * Finish Timer Automatically
+ */
+function finishTimerAutomatically() {
+    isRunning = false;
+    
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (timerDisplay) {
+        timerDisplay.textContent = '00:00';
+        timerDisplay.style.color = '#00ff64';
+        timerDisplay.style.animation = 'glow 0.5s ease-out infinite';
+    }
+    
+    const finishBtn = document.getElementById('finishBtn');
+    if (finishBtn) {
+        finishBtn.textContent = 'TIME COMPLETE! TAP TO CONTINUE';
+        finishBtn.style.background = 'linear-gradient(135deg, #00ff64 0%, var(--cyan) 100%)';
+        finishBtn.style.boxShadow = '0 0 30px rgba(0, 255, 100, 0.5)';
+    }
+    
+    // Auto finish after 5 seconds
+    setTimeout(() => {
+        finishQuest();
+    }, 5000);
+}
+
+/**
+ * Play Warning Sound (Optional)
+ */
+function playWarningSound() {
+    // Create beep sound using Web Audio API
+    try {
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gain.gain.setValueAtTime(0.3, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+        
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.5);
+    } catch (e) {
+        console.log('Audio not available');
+    }
+}
+
+/**
+ * DEBUG: Set test time
+ */
+function debugSetTestTime(minutes) {
+    totalTime = minutes * 60;
+    timeRemaining = totalTime;
+    updateTimerDisplay();
+    console.log(`✓ Test time set to ${minutes} minutes`);
+}

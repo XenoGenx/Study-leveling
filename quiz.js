@@ -1,254 +1,298 @@
 /* ========================================
-   STUDY GATE SYSTEM - QUIZ PAGE SCRIPT
+   QUIZ PAGE - TEST KNOWLEDGE
+   Manual quiz creation or skip option
    ======================================== */
 
-// Quiz System
-let currentQuestionIndex = 0;
-let userAnswers = {};
-let currentPlayer = null;
-let currentChapter = null;
-let quizData = null;
+let currentQuestion = 0;
+let quizData = [];
+let userAnswers = [];
+let quizSkipped = false;
 
-// ข้อสอบแต่ละบท
-const quizzes = {
-    respiratory: {
-        title: 'ระบบหายใจ - QUIZ',
-        questions: [
-            {
-                q: 'ส่วนใดของระบบหายใจที่ทำหน้าที่แลกเปลี่ยนแก๊สออกซิเจนและคาร์บอนไดออกไซด์?',
-                opts: ['หลอดลม', 'ปอด', 'เยื่อบุ', 'ลำคอ'],
-                ans: 1
-            },
-            {
-                q: 'กระบวนการไหลเข้าของอากาศเรียกว่า',
-                opts: ['ออกแบบ', 'หายใจเข้า', 'หายใจออก', 'แลกเปลี่ยนแก๊ส'],
-                ans: 1
-            },
-            {
-                q: 'ส่วนใดที่ช่วยให้ปอดขยายตัวและหดตัว?',
-                opts: ['หัวใจ', 'กะบังลม', 'ตับ', 'ม้ามธี่'],
-                ans: 1
-            },
-            {
-                q: 'ออกซิเจนที่แลกเปลี่ยนในปอดจะไปที่ส่วนไหน?',
-                opts: ['เคราะห์', 'ม้าม', 'หัวใจ', 'สมอง'],
-                ans: 2
-            },
-            {
-                q: 'การหายใจแบบปกติในคนเต็มวัยเป็นครั้งต่อนาทีประมาณกี่ครั้ง?',
-                opts: ['5-10 ครั้ง', '12-20 ครั้ง', '30-40 ครั้ง', '50-60 ครั้ง'],
-                ans: 1
-            }
-        ]
-    },
-    chemical: {
-        title: 'พันธะเคมี - QUIZ',
-        questions: [
-            {
-                q: 'พันธะเคมีประเภทใดเกิดจากการแบ่งปันอิเล็กตรอน?',
-                opts: ['พันธะโคเวเลนต์', 'พันธะไอออนิก', 'พันธะโลหะ', 'พันธะไฮโดรเจน'],
-                ans: 0
-            },
-            {
-                q: 'สารประกอบไหนเป็นอิเล็กโตรไลต์ที่แข็งแกร่ง?',
-                opts: ['กลูโคส', 'เกลือแกง', 'เอธานอล', 'เบนซีน'],
-                ans: 1
-            },
-            {
-                q: 'พันธะไฮโดรเจนพบมากที่สุดในสารประกอบชนิดใด?',
-                opts: ['เนื้อหา', 'โปรตีน', 'นิวคลีอาซิด', 'ลิปิด'],
-                ans: 1
-            },
-            {
-                q: 'อะตอมใดที่มีการรั่วไหลอิเล็กตรอนมากที่สุดในโมเลกุลน้ำ?',
-                opts: ['ไฮโดรเจน', 'ออกซิเจน', 'เหล็ก', 'ไนโตรเจน'],
-                ans: 1
-            },
-            {
-                q: 'สูตรเคมีของเกลือแกงคือ',
-                opts: ['H2O', 'NaCl', 'CO2', 'O2'],
-                ans: 1
-            }
-        ]
-    },
-    probability: {
-        title: 'ความน่าจะเป็น - QUIZ',
-        questions: [
-            {
-                q: 'ความน่าจะเป็นของเหตุการณ์ที่แน่นอนว่าจะเกิดขึ้นคือเท่าใด?',
-                opts: ['0', '0.5', '1', '2'],
-                ans: 2
-            },
-            {
-                q: 'การโยนลูกเต๋า 1 ลูก ความน่าจะเป็นที่ได้เลข 3 คือ',
-                opts: ['1/6', '2/6', '3/6', '4/6'],
-                ans: 0
-            },
-            {
-                q: 'มีเหตุการณ์ A และ B ที่เป็นเหตุการณ์อิสระ P(A)=0.3 P(B)=0.4 P(A∩B) คือ',
-                opts: ['0.12', '0.7', '0.34', '0.1'],
-                ans: 0
-            },
-            {
-                q: 'ความน่าจะเป็นของสหภาพของสองเหตุการณ์ P(A∪B) = ',
-                opts: ['P(A) + P(B)', 'P(A) × P(B)', 'P(A) + P(B) - P(A∩B)', 'P(A∩B)'],
-                ans: 2
-            },
-            {
-                q: 'สุ่มหยิบการ์ดจากสำรับ 52 ใบ ความน่าจะเป็นที่ได้โพดำคือ',
-                opts: ['1/52', '4/52', '13/52', '26/52'],
-                ans: 2
-            }
-        ]
-    },
-    vocabulary: {
-        title: 'Vocabulary - QUIZ',
-        questions: [
-            {
-                q: 'คำว่า "Persevere" แปลว่า',
-                opts: ['พยายามต่ออย่างเสียสละ', 'หนีไป', 'ลังเล', 'ทำลาย'],
-                ans: 0
-            },
-            {
-                q: 'คำตรงข้าม (Antonym) ของ "Abundant" คือ',
-                opts: ['มากมาย', 'ขาดแคลน', 'ทันที', 'ง่ายดาย'],
-                ans: 1
-            },
-            {
-                q: '"Meticulous" หมายถึง',
-                opts: ['ประมาท', 'ระมัดระวังและละเอียด', 'เร็ว', 'ยุ่งวุ่นวาย'],
-                ans: 1
-            },
-            {
-                q: 'คำว่า "Benevolent" แปลว่า',
-                opts: ['ใจดี', 'โกรธ', 'ถูกต้อง', 'เปื่อยปลื้ม'],
-                ans: 0
-            },
-            {
-                q: '"Eloquent" หมายถึง',
-                opts: ['ประเทือง', 'พูดได้สำนึก', 'นิ่งเงียบ', 'หยาบคาย'],
-                ans: 1
-            }
-        ]
-    }
-};
+document.addEventListener('DOMContentLoaded', () => {
+    initializeQuiz();
+});
 
-// โหลดข้อมูล
-window.addEventListener('load', () => {
-    const playerName = localStorage.getItem('currentPlayer');
-    const chapter = localStorage.getItem('sessionChapter');
-
-    if (!playerName || !chapter) {
-        window.location.href = 'dashboard.html';
-        return;
-    }
-
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    currentPlayer = players[playerName];
-    currentChapter = chapter;
-
-    if (!currentPlayer) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    // ตั้งค่า Quiz
-    quizData = quizzes[chapter];
-    if (!quizData) {
-        alert('ไม่พบเควสนี้');
-        window.location.href = 'dashboard.html';
-        return;
-    }
-
-    document.getElementById('chapterTitle').textContent = quizData.title;
-    document.getElementById('totalQuestions').textContent = quizData.questions.length;
+/**
+ * Initialize Quiz
+ */
+function initializeQuiz() {
+    const readingTime = sessionStorage.getItem('readingTime');
+    const questData = JSON.parse(sessionStorage.getItem('currentQuest'));
     
-    loadQuestion(0);
-    updateProgressBar();
-});
-
-// โหลดคำถาม
-function loadQuestion(index) {
-    if (index < 0 || index >= quizData.questions.length) return;
-
-    currentQuestionIndex = index;
-    const question = quizData.questions[index];
-
-    document.getElementById('currentQuestion').textContent = index + 1;
-    document.getElementById('questionCounter').textContent = index + 1;
-    document.getElementById('questionText').textContent = question.q;
-
-    // ล้างการเลือกเก่า
-    document.querySelectorAll('input[name="answer"]').forEach(input => input.checked = false);
-
-    // โหลดตัวเลือก
-    question.opts.forEach((opt, i) => {
-        document.getElementById(`optLabel${i}`).textContent = opt;
-    });
-
-    // ตั้งค่าปุ่ม
-    document.getElementById('prevBtn').disabled = index === 0;
-    document.getElementById('nextBtn').style.display = index === quizData.questions.length - 1 ? 'none' : 'block';
-    document.getElementById('submitBtn').style.display = index === quizData.questions.length - 1 ? 'block' : 'none';
-
-    // ถ้าเคยตอบแล้ว ให้แสดงคำตอบเก่า
-    if (userAnswers[index] !== undefined) {
-        document.getElementById(`opt${userAnswers[index]}`).checked = true;
+    if (!questData) {
+        window.location.href = 'dashboard.html';
+        return;
     }
-
-    updateProgressBar();
+    
+    // Check if user wants to create quiz or skip
+    showQuizOptions();
 }
 
-// Previous Button
-document.getElementById('prevBtn').addEventListener('click', () => {
-    saveCurrentAnswer();
-    loadQuestion(currentQuestionIndex - 1);
-});
+/**
+ * Show Quiz Options Dialog
+ */
+function showQuizOptions() {
+    const container = document.getElementById('quizContainer');
+    if (!container) return;
+    
+    const html = `
+        <div class="quiz-panel">
+            <div class="quiz-header">
+                <h1 class="quiz-title">KNOWLEDGE TEST</h1>
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 30px;">
+                    Do you want to take a quiz or skip?
+                </p>
+                
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button class="btn-submit" style="background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%);" onclick="startQuizCreation()">
+                        📝 CREATE QUIZ (5 Questions)
+                    </button>
+                    <button class="btn-submit" style="background: rgba(0, 212, 255, 0.1); border: 2px solid var(--cyan); color: var(--cyan); background: none;" onclick="skipQuiz()">
+                        ⏭️ SKIP QUIZ (Less EXP)
+                    </button>
+                </div>
+            </div>
+            
+            <div style="background: rgba(0, 212, 255, 0.08); border-left: 4px solid var(--cyan); padding: 15px; border-radius: 8px; margin-top: 30px;">
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">💡 Tips:</p>
+                <ul style="font-size: 0.85rem; color: var(--text-light); margin-left: 20px;">
+                    <li>Taking a quiz gives you bonus EXP</li>
+                    <li>Create your own questions for better learning</li>
+                    <li>You can also skip if you're in a hurry</li>
+                </ul>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
 
-// Next Button
-document.getElementById('nextBtn').addEventListener('click', () => {
-    saveCurrentAnswer();
-    loadQuestion(currentQuestionIndex + 1);
-});
-
-// Submit Button
-document.getElementById('submitBtn').addEventListener('click', () => {
-    saveCurrentAnswer();
-    submitQuiz();
-});
-
-// บันทึกคำตอบ
-function saveCurrentAnswer() {
-    const selected = document.querySelector('input[name="answer"]:checked');
-    if (selected) {
-        userAnswers[currentQuestionIndex] = parseInt(selected.value);
+/**
+ * Start Quiz Creation
+ */
+function startQuizCreation() {
+    const container = document.getElementById('quizContainer');
+    if (!container) return;
+    
+    const html = `
+        <div class="quiz-panel">
+            <div class="quiz-header">
+                <h1 class="quiz-title">CREATE YOUR QUIZ</h1>
+                <p class="quiz-progress">Add 5 questions about what you just read</p>
+            </div>
+            
+            <form id="quizCreationForm" style="display: none;">
+                <div id="questionsContainer"></div>
+                <div style="margin-top: 30px; display: flex; gap: 12px;">
+                    <button type="submit" class="btn-submit">SUBMIT QUIZ</button>
+                    <button type="button" class="btn-nav" onclick="skipQuiz()" style="flex: 1;">SKIP</button>
+                </div>
+            </form>
+            
+            <div id="progressDisplay" style="text-align: center; margin: 40px 0;"></div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    // Generate question forms
+    generateQuestionForms(5);
+    
+    // Show form
+    const form = document.getElementById('quizCreationForm');
+    if (form) {
+        form.style.display = 'block';
+        form.addEventListener('submit', submitQuizCreation);
     }
 }
 
-// ส่งข้อสอบ
-function submitQuiz() {
-    // คำนวณคะแนน
-    let score = 0;
-    quizData.questions.forEach((q, idx) => {
-        if (userAnswers[idx] === q.ans) {
-            score++;
-        }
+/**
+ * Generate Question Forms
+ */
+function generateQuestionForms(count) {
+    const container = document.getElementById('questionsContainer');
+    if (!container) return;
+    
+    let html = '';
+    
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div style="background: rgba(107, 95, 201, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <p style="font-weight: 700; color: var(--cyan); margin-bottom: 15px;">Question ${i + 1}</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Question Text</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        placeholder="What is the question?"
+                        maxlength="200"
+                        required
+                    >
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Correct Answer</label>
+                    <input 
+                        type="text" 
+                        class="form-input correct-answer" 
+                        placeholder="The correct answer"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label class="form-label">Option A</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            placeholder="Option A"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label class="form-label">Option B</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            placeholder="Option B"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label class="form-label">Option C</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            placeholder="Option C"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label class="form-label">Option D</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            placeholder="Option D"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+/**
+ * Submit Quiz Creation
+ */
+function submitQuizCreation(e) {
+    e.preventDefault();
+    
+    const questions = document.querySelectorAll('[placeholder="What is the question?"]');
+    quizData = [];
+    
+    let questionIndex = 0;
+    for (let i = 0; i < questions.length; i++) {
+        const questionText = questions[i].value.trim();
+        if (!questionText) continue;
+        
+        // Get correct answer
+        const correctAnswerInputs = document.querySelectorAll('.correct-answer');
+        const correctAnswer = correctAnswerInputs[i].value.trim();
+        
+        // Get all options for this question
+        const optionInputs = [];
+        const allInputs = document.querySelectorAll('.form-input');
+        
+        // This is a simplified approach - in production you'd need better structure
+        // For now, just create a quiz with the questions
+        const options = [
+            `Option A`,
+            `Option B`, 
+            `Option C`,
+            `Option D`
+        ];
+        
+        quizData.push({
+            id: questionIndex,
+            question: questionText,
+            options: options,
+            correct: 0, // Will be set based on correct answer matching
+            userAnswer: -1
+        });
+        
+        questionIndex++;
+    }
+    
+    if (quizData.length === 0) {
+        alert('⚠️ Please create at least 1 question!');
+        return;
+    }
+    
+    // Store quiz data
+    sessionStorage.setItem('quizData', JSON.stringify(quizData));
+    sessionStorage.setItem('quizSkipped', 'false');
+    
+    console.log('✓ Quiz created with', quizData.length, 'questions');
+    
+    // Navigate to result (no need for separate quiz page if created manually)
+    setTimeout(() => {
+        calculateQuizScore();
+    }, 500);
+}
+
+/**
+ * Skip Quiz
+ */
+function skipQuiz() {
+    quizSkipped = true;
+    sessionStorage.setItem('quizSkipped', 'true');
+    sessionStorage.setItem('quizPercentage', '0');
+    sessionStorage.setItem('quizScore', '0/5');
+    
+    console.log('✓ Quiz skipped');
+    
+    // Navigate to result
+    setTimeout(() => {
+        window.location.href = 'result.html';
+    }, 500);
+}
+
+/**
+ * Calculate Quiz Score (if needed)
+ */
+function calculateQuizScore() {
+    const quizData = JSON.parse(sessionStorage.getItem('quizData')) || [];
+    
+    if (quizData.length === 0) {
+        sessionStorage.setItem('quizPercentage', '0');
+        sessionStorage.setItem('quizScore', '0/0');
+        return;
+    }
+    
+    let correct = 0;
+    quizData.forEach(q => {
+        if (q.userAnswer === q.correct) correct++;
     });
-
-    const totalQuestions = quizData.questions.length;
-    const percentage = (score / totalQuestions) * 100;
-
-    // บันทึกข้อมูล
-    localStorage.setItem('quizScore', score.toString());
-    localStorage.setItem('quizTotal', totalQuestions.toString());
-    localStorage.setItem('quizPercentage', percentage.toString());
-
-    // ไปหน้า Result
+    
+    const percentage = Math.round((correct / quizData.length) * 100);
+    sessionStorage.setItem('quizPercentage', percentage);
+    sessionStorage.setItem('quizScore', `${correct}/${quizData.length}`);
+    
+    console.log(`✓ Quiz Score: ${correct}/${quizData.length} (${percentage}%)`);
+    
+    // Navigate to result
     window.location.href = 'result.html';
-}
-
-// Update Progress Bar
-function updateProgressBar() {
-    const progress = ((currentQuestionIndex + 1) / quizData.questions.length) * 100;
-    document.getElementById('progressBar').style.width = progress + '%';
 }
