@@ -447,6 +447,262 @@ function debugClearAllData() {
     }
 }
 
+// ========================================
+// QUEST & REWARD SYSTEM FUNCTIONS
+// ========================================
+
+/**
+ * คำนวณ EXP จากเควส
+ * @param {number} readingTime - เวลาอ่านจริงในหน่วยนาที
+ * @param {number} targetTime - เวลาเป้าหมายในหน่วยนาที
+ * @param {string} difficulty - ระดับความยาก (Easy, Normal, Hard, Boss)
+ * @param {number} quizScore - คะแนน Quiz (0-100) หรือ 0 ถ้าไม่ทำ
+ * @param {number} streak - Streak ปัจจุบัน
+ * @returns {object} {baseExp, bonusExp, totalExp}
+ */
+function calculateQuestExp(readingTime, targetTime, difficulty, quizScore, streak) {
+    // Base EXP = 50
+    let baseExp = 50;
+    
+    // Difficulty Multiplier
+    const difficultyMultiplier = {
+        'easy': 0.8,
+        'normal': 1,
+        'hard': 1.5,
+        'boss': 2
+    };
+    
+    const multiplier = difficultyMultiplier[difficulty.toLowerCase()] || 1;
+    baseExp *= multiplier;
+    
+    let bonusExp = 0;
+    
+    // Time Bonus (ถ้าอ่านครบเป้าหมาย)
+    if (readingTime >= targetTime) {
+        bonusExp += 30;
+    } else if (readingTime >= targetTime * 0.8) {
+        bonusExp += 20;
+    } else if (readingTime >= targetTime * 0.6) {
+        bonusExp += 10;
+    }
+    
+    // Quiz Score Bonus
+    if (quizScore > 0) {
+        if (quizScore >= 90) bonusExp += 40;
+        else if (quizScore >= 80) bonusExp += 30;
+        else if (quizScore >= 70) bonusExp += 20;
+        else if (quizScore >= 60) bonusExp += 15;
+    }
+    
+    // Streak Bonus
+    if (streak >= 7) bonusExp += 25;
+    else if (streak >= 3) bonusExp += 15;
+    
+    const totalExp = baseExp + bonusExp;
+    
+    return {
+        baseExp: Math.floor(baseExp),
+        bonusExp: Math.floor(bonusExp),
+        totalExp: Math.floor(totalExp)
+    };
+}
+
+/**
+ * ข้อความให้กำลังใจตามผลลัพธ์
+ * @param {number} quizScore - คะแนน (0-100)
+ * @param {number} readingTime - เวลาอ่าน (นาที)
+ * @param {number} targetTime - เวลาเป้าหมาย (นาที)
+ * @param {number} streak - Streak ปัจจุบัน
+ * @returns {string} ข้อความให้กำลังใจ
+ */
+function getMotivationalMessage(quizScore, readingTime, targetTime, streak) {
+    const messages = {
+        // เมื่อ Score ต่ำ
+        lowScore: [
+            '💪 ไม่เป็นไร! ทุกครั้งเป็นการเรียนรู้ มาพยายามอีกครั้งเพื่อปรับปรุงตัวเอง',
+            '🌟 คะแนนนี้แค่จุดเริ่มต้นของการเดินทางของเรา ยังมีช่องว่างที่จะพัฒนา',
+            '⚡ อย่าท้อแท้! นักวิจัยยอดเยี่ยมทั้งหลายก็เคยผ่านช่วงเช่นนี้มา'
+        ],
+        // เมื่อ Score ปานกลาง
+        mediumScore: [
+            '👍 ไม่เลว! คุณอยู่บนเส้นทางที่ถูก เพียงแค่ต้องมีความต่อเนื่อง',
+            '🎯 ดีจริง! ถ้าเพิ่มความเข้าใจเพียงเล็กน้อย คุณจะบรรลุเป้าหมาย',
+            '✨ ความพยายามของคุณจะเห็นผล ค่อยๆ พัฒนาตัวเองให้ดีขึ้น'
+        ],
+        // เมื่อ Score ดี
+        highScore: [
+            '🏆 ยอดเยี่ยม! ความเข้าใจของคุณแยมมากขึ้นแต่ละครั้ง',
+            '⭐ พerfect! คุณแสดงให้เห็นถึงจิตสำนึกที่แน่วแน่ ทำให้ได้คะแนนสูง',
+            '🚀 เก่งมากๆ! ขยับสู่ระดับ Legend ของความเป็นนักเรียน'
+        ],
+        // เมื่อ Score Perfect
+        perfectScore: [
+            '👑 PERFECT! คุณเป็น Master ที่แท้จริงของหัวข้อนี้!',
+            '🌠 ยอดเยี่ยมอย่างไม่มีที่สิ้นสุด! สูตรสำเร็จคือการศึกษาอย่างตั้งใจ',
+            '💎 ระดับ S Rank! เทพสามารถเดินแบบนี้เช่นกัน!'
+        ],
+        // เมื่ออ่านครบเวลา
+        focusedHunter: [
+            '🎯 โฟกัสครบ! ความพยายามของคุณไม่สูญหาย',
+            '💯 วินัยแบบนักสุดยอด! คุณเคารพเวลาที่ตั้งไว้',
+            '🔥 Focus Meter ของคุณเต็มท้อม! ทำให้งานสำเร็จ'
+        ],
+        // เมื่อ Streak สูง
+        streakKeeper: [
+            `🔥 Streak ${streak} วัน! ความสม่ำเสมอคือกุญแจสู่ความสำเร็จ`,
+            `⛓️ ใจดี ${streak} วันต่อเนื่อง! ห้ามหยุด ที่นี่เป็นจุดเริ่มต้น`,
+            `✨ Combo ${streak} ครั้ง! คุณได้สร้างนิสัยที่ดีแล้ว`
+        ]
+    };
+    
+    let messageCategory = 'mediumScore';
+    
+    if (quizScore === 100) messageCategory = 'perfectScore';
+    else if (quizScore >= 85) messageCategory = 'highScore';
+    else if (quizScore >= 60) messageCategory = 'mediumScore';
+    else if (quizScore > 0) messageCategory = 'lowScore';
+    
+    // เลือกข้อความแบบสุ่ม
+    const categoryMessages = messages[messageCategory];
+    const randomMessage = categoryMessages[Math.floor(Math.random() * categoryMessages.length)];
+    
+    let finalMessage = randomMessage;
+    
+    // เพิ่มข้อความตามเวลาอ่าน
+    if (readingTime >= targetTime) {
+        const focusMessages = messages.focusedHunter;
+        finalMessage += '\n\n' + focusMessages[Math.floor(Math.random() * focusMessages.length)];
+    }
+    
+    // เพิ่มข้อความตาม Streak
+    if (streak >= 3) {
+        const streakMessages = messages.streakKeeper;
+        finalMessage += '\n\n' + streakMessages[Math.floor(Math.random() * streakMessages.length)];
+    }
+    
+    return finalMessage;
+}
+
+/**
+ * ตรวจสอบ Badge ที่ปลดล็อก
+ * @param {object} player - ข้อมูลผู้ใช้
+ * @param {number} readingTime - เวลาอ่าน
+ * @param {number} targetTime - เวลาเป้าหมาย
+ * @param {number} quizScore - คะแนน
+ * @param {number} streak - Streak ปัจจุบัน
+ * @returns {array} อาร์เรย์ Badge ที่เพิ่งปลดล็อก
+ */
+function checkBadgeUnlock(player, readingTime, targetTime, quizScore, streak) {
+    const newBadges = [];
+    const existingBadges = player.badges || [];
+    
+    // First Clear - ทำเควสครั้งแรก
+    if (player.questsCompleted === 1 && !existingBadges.includes('First Clear')) {
+        newBadges.push({ id: 'first-clear', name: 'First Clear', icon: '🗝️' });
+    }
+    
+    // Focus Hunter - อ่านครบเป้าหมายเวลา
+    if (readingTime >= targetTime && !existingBadges.includes('Focus Hunter')) {
+        newBadges.push({ id: 'focus-hunter', name: 'Focus Hunter', icon: '🎯' });
+    }
+    
+    // Perfect Memory - ทำคะแนน 100%
+    if (quizScore === 100 && !existingBadges.includes('Perfect Memory')) {
+        newBadges.push({ id: 'perfect-memory', name: 'Perfect Memory', icon: '💯' });
+    }
+    
+    // Streak Keeper - Streak 7 วัน
+    if (streak >= 7 && !existingBadges.includes('Streak Keeper')) {
+        newBadges.push({ id: 'streak-keeper', name: 'Streak Keeper', icon: '🔥' });
+    }
+    
+    // Knowledge Seeker - ทำเควส 10 ครั้ง
+    if (player.questsCompleted >= 10 && !existingBadges.includes('Knowledge Seeker')) {
+        newBadges.push({ id: 'knowledge-seeker', name: 'Knowledge Seeker', icon: '📚' });
+    }
+    
+    // Night Scholar - ทำเควสในเวลากลางคืน (22:00 - 06:00)
+    const hour = new Date().getHours();
+    if ((hour >= 22 || hour < 6) && !existingBadges.includes('Night Scholar')) {
+        newBadges.push({ id: 'night-scholar', name: 'Night Scholar', icon: '🌙' });
+    }
+    
+    return newBadges;
+}
+
+/**
+ * ตรวจสอบ Skill Card ที่ปลดล็อก
+ * @param {object} player - ข้อมูลผู้ใช้
+ * @param {number} quizScore - คะแนน
+ * @returns {array} อาร์เรย์ Skill Card ที่เพิ่งปลดล็อก
+ */
+function checkSkillUnlock(player, quizScore) {
+    const newSkills = [];
+    const existingSkills = player.skillCards || [];
+    
+    // Concentration Boost - Score 70%
+    if (quizScore >= 70 && !existingSkills.includes('Concentration Boost')) {
+        newSkills.push({ id: 'concentration', name: 'Concentration Boost', icon: '🧠' });
+    }
+    
+    // Memory Spark - Score 80%
+    if (quizScore >= 80 && !existingSkills.includes('Memory Spark')) {
+        newSkills.push({ id: 'memory', name: 'Memory Spark', icon: '⚡' });
+    }
+    
+    // Deep Focus - Score 85%
+    if (quizScore >= 85 && !existingSkills.includes('Deep Focus')) {
+        newSkills.push({ id: 'deep-focus', name: 'Deep Focus', icon: '🔮' });
+    }
+    
+    // Knowledge Blade - Score 90%
+    if (quizScore >= 90 && !existingSkills.includes('Knowledge Blade')) {
+        newSkills.push({ id: 'knowledge-blade', name: 'Knowledge Blade', icon: '⚔️' });
+    }
+    
+    // Review Shield - 5 เควสสำเร็จ
+    if (player.questsCompleted >= 5 && !existingSkills.includes('Review Shield')) {
+        newSkills.push({ id: 'review-shield', name: 'Review Shield', icon: '🛡️' });
+    }
+    
+    return newSkills;
+}
+
+/**
+ * ตรวจสอบการ Rank Up
+ * @param {number} oldExp - EXP เดิม
+ * @param {number} newExp - EXP ใหม่
+ * @returns {object} {rankedUp: boolean, oldRank, newRank}
+ */
+function checkRankUp(oldExp, newExp) {
+    const oldRank = calculateRank(oldExp);
+    const newRank = calculateRank(newExp);
+    
+    return {
+        rankedUp: oldRank !== newRank,
+        oldRank,
+        newRank,
+        newRankName: getRankName(newRank)
+    };
+}
+
+/**
+ * ดึงชื่อ Rank แบบเต็ม
+ * @param {string} rank - Rank (E, D, C, B, A, S)
+ * @returns {string} ชื่อเต็ม
+ */
+function getRankName(rank) {
+    const rankNames = {
+        'E': 'Rank E - Novice',
+        'D': 'Rank D - Apprentice',
+        'C': 'Rank C - Warrior',
+        'B': 'Rank B - Elite',
+        'A': 'Rank A - Master',
+        'S': 'Rank S - Legend'
+    };
+    return rankNames[rank] || 'Unknown';
+}
+
 /**
  * สร้างผู้ใช้ Test
  */
