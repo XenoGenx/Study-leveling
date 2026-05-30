@@ -6,6 +6,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     displayResults();
     setupEventListeners();
+    
+    // Auto-claim rewards after 1 second
+    setTimeout(() => {
+        console.log('⚡ Auto-claiming rewards...');
+        claimReward();
+    }, 1000);
 });
 
 function displayResults() {
