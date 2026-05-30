@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - STUDY GATE SYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Header -->
+        <div class="quiz-header">
+            <h1 id="chapterTitle" class="quiz-title">Chapter Quiz</h1>
+            <div class="quiz-progress">
+                <span id="questionCounter">1</span> / <span id="totalQuestions">5</span>
+            </div>
+        </div>
+
+        <!-- Quiz Window -->
+        <div class="quiz-window">
+            <!-- Question Display -->
+            <div class="question-section">
+                <div class="question-number">Question <span id="currentQuestion">1</span></div>
+                <h2 id="questionText" class="question-text">Question</h2>
+            </div>
+
+            <!-- Options -->
+            <div class="options-container">
+                <div class="option-item" data-option="0">
+                    <input type="radio" name="answer" id="opt0" value="0">
+                    <label for="opt0" id="optLabel0">Option A</label>
+                </div>
+                <div class="option-item" data-option="1">
+                    <input type="radio" name="answer" id="opt1" value="1">
+                    <label for="opt1" id="optLabel1">Option B</label>
+                </div>
+                <div class="option-item" data-option="2">
+                    <input type="radio" name="answer" id="opt2" value="2">
+                    <label for="opt2" id="optLabel2">Option C</label>
+                </div>
+                <div class="option-item" data-option="3">
+                    <input type="radio" name="answer" id="opt3" value="3">
+                    <label for="opt3" id="optLabel3">Option D</label>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="quiz-navigation">
+                <button id="prevBtn" class="btn-nav btn-prev" disabled>← PREVIOUS</button>
+                <div class="nav-spacer"></div>
+                <button id="nextBtn" class="btn-nav btn-next">NEXT →</button>
+                <button id="submitBtn" class="btn-nav btn-submit" style="display: none;">SUBMIT QUIZ</button>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="quiz-progress-bar">
+            <div id="progressBar" class="progress-indicator"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STUDY GATE SYSTEM - Welcome</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="welcome-container">
+        <!-- ส่วนหลัก Welcome -->
+        <div class="welcome-panel">
+            <div class="gate-glow"></div>
+            
+            <!-- Header -->
+            <div class="welcome-header">
+                <h1 class="system-title">STUDY GATE SYSTEM</h1>
+                <p class="welcome-subtitle">WELCOME, NEW HUNTER</p>
+                <p class="welcome-desc">กรอกชื่อของคุณเพื่อเข้าสู่ภารกิจอ่านหนังสือ</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="playerName" 
+                        class="player-input" 
+                        placeholder="ป้อนชื่อผู้ใช้..." 
+                        maxlength="20"
+                    >
+                    <div class="input-border"></div>
+                </div>
+                
+                <button id="enterBtn" class="btn-enter">ENTER THE GATE</button>
+            </div>
+
+            <!-- Status Box -->
+            <div class="status-box">
+                <div class="status-item">
+                    <span class="status-label">Rank:</span>
+                    <span class="status-value" id="statusRank">Unregistered</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Status:</span>
+                    <span class="status-value" id="statusMsg">Awaiting Awakening...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Quest Access:</span>
+                    <span class="status-value" id="questAccess">Locked</span>
+                </div>
+            </div>
+
+            <!-- Message Box -->
+            <div id="messageBox" class="message-box"></div>
+        </div>
+
+        <!-- Animated Background Elements -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="welcome.js"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest Complete - STUDY GATE SYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="result-container">
+        <!-- Main Result Panel -->
+        <div class="result-panel">
+            <!-- Header -->
+            <div class="result-header">
+                <h1 class="result-title">QUEST COMPLETE</h1>
+                <div class="completion-animation">
+                    <div class="star star-1">⭐</div>
+                    <div class="star star-2">⭐</div>
+                    <div class="star star-3">⭐</div>
+                </div>
+            </div>
+
+            <!-- Quest Summary -->
+            <div class="quest-summary">
+                <div class="summary-row">
+                    <span class="summary-label">Hunter:</span>
+                    <span id="playerName" class="summary-value">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Chapter:</span>
+                    <span id="chapterName" class="summary-value">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Reading Time:</span>
+                    <span id="readingTime" class="summary-value">- min</span>
+                </div>
+            </div>
+
+            <!-- Score & Rewards Section -->
+            <div class="rewards-container">
+                <!-- Quiz Score -->
+                <div class="reward-box score-box">
+                    <h3>QUIZ SCORE</h3>
+                    <div class="score-display">
+                        <span id="scoreValue" class="score-number">0</span>
+                        <span class="score-slash">/</span>
+                        <span id="scoreTotal" class="score-total">10</span>
+                    </div>
+                    <div class="score-percentage">
+                        <div class="percentage-bar">
+                            <div id="scoreFill" class="percentage-fill"></div>
+                        </div>
+                        <span id="percentageText" class="percentage-text">0%</span>
+                    </div>
+                </div>
+
+                <!-- EXP Reward -->
+                <div class="reward-box exp-box">
+                    <h3>EXPERIENCE GAINED</h3>
+                    <div class="exp-reward">
+                        <span class="exp-amount">+<span id="expAmount">0</span></span>
+                        <span class="exp-icon">⚡</span>
+                    </div>
+                </div>
+
+                <!-- Status Increases -->
+                <div class="reward-box status-box">
+                    <h3>STATUS INCREASED</h3>
+                    <div class="status-changes">
+                        <div class="status-change">
+                            <span>Focus:</span>
+                            <span id="focusChange" class="change-value">+0</span>
+                        </div>
+                        <div class="status-change">
+                            <span>Memory:</span>
+                            <span id="memoryChange" class="change-value">+0</span>
+                        </div>
+                        <div class="status-change">
+                            <span>Understanding:</span>
+                            <span id="understandingChange" class="change-value">+0</span>
+                        </div>
+                        <div class="status-change">
+                            <span>Accuracy:</span>
+                            <span id="accuracyChange" class="change-value">+0</span>
+                        </div>
+                        <div class="status-change">
+                            <span>Mastery:</span>
+                            <span id="masteryChange" class="change-value">+0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mastery Level -->
+                <div class="reward-box mastery-box">
+                    <h3>CHAPTER MASTERY</h3>
+                    <div class="mastery-level">
+                        <span id="masteryLevel" class="mastery-text">Basic</span>
+                        <div class="mastery-meter">
+                            <div id="masteryBar" class="mastery-fill"></div>
+                        </div>
+                        <span id="masteryPercent" class="mastery-percent">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Rewards -->
+            <div class="new-rewards">
+                <!-- New Badges -->
+                <div id="badgeSection" class="reward-section" style="display: none;">
+                    <h3>🏆 NEW BADGE UNLOCKED</h3>
+                    <div id="newBadges" class="new-badges-list"></div>
+                </div>
+
+                <!-- New Skills -->
+                <div id="skillSection" class="reward-section" style="display: none;">
+                    <h3>✨ NEW SKILL CARD</h3>
+                    <div id="newSkills" class="new-skills-list"></div>
+                </div>
+
+                <!-- Rank Up -->
+                <div id="rankUpSection" class="reward-section rank-up-animation" style="display: none;">
+                    <h3>⚔️ RANK UP!</h3>
+                    <div class="rank-up-display">
+                        <span id="oldRank" class="old-rank">E</span>
+                        <span class="arrow">→</span>
+                        <span id="newRank" class="new-rank">D</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivation Message -->
+            <div class="motivation-message">
+                <p id="motivationMsg" class="motivation-text">
+                    ✨ ยอดเยี่ยม Hunter คุณเข้าใจบทเรียนนี้ในระดับสูงแล้ว
+                </p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="result-buttons">
+                <button id="claimBtn" class="btn-claim">CLAIM REWARD</button>
+                <button id="continueBtn" class="btn-continue">CONTINUE</button>
+            </div>
+        </div>
+
+        <!-- Background Effects -->
+        <div class="result-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="result.js"></script>
+</body>
+</html>
+
+<!-- OLD SCRIPT REMOVED (moved to result.js):
+
+        let currentPlayer = null;
+        let currentChapter = null;
+        let quizScore = 0;
+        let quizTotal = 10;
+        let quizPercentage = 0;
+        let readingTime = 0;
+
+        // โหลดข้อมูล
+        window.addEventListener('load', () => {
+            const playerName = localStorage.getItem('currentPlayer');
+
+            if (!playerName) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+</script>
+</body>
+</html>

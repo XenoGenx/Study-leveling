@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - STUDY GATE SYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="header-left">
+                <h1 id="playerTitle" class="player-title">HUNTER</h1>
+                <div class="rank-badge">
+                    <span id="rankDisplay" class="rank-text">E Rank</span>
+                </div>
+            </div>
+            <button id="logoutBtn" class="btn-logout">CHANGE HUNTER</button>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="dashboard-main">
+            <!-- Left Section: Stats & EXP -->
+            <div class="left-panel">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <h2>PROFILE</h2>
+                    <div class="profile-grid">
+                        <div class="profile-stat">
+                            <span class="stat-label">Level</span>
+                            <span id="levelDisplay" class="stat-value">1</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-label">Quests</span>
+                            <span id="questsDisplay" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXP Bar -->
+                <div class="exp-container">
+                    <div class="exp-header">
+                        <span>EXPERIENCE</span>
+                        <span id="expText" class="exp-value">0/300</span>
+                    </div>
+                    <div class="exp-bar">
+                        <div id="expFill" class="exp-fill"></div>
+                        <div class="exp-glow"></div>
+                    </div>
+                </div>
+
+                <!-- Status Window -->
+                <div class="status-window">
+                    <h2>STATUS</h2>
+                    <div class="status-grid">
+                        <div class="stat-item">
+                            <label>Focus</label>
+                            <div class="stat-bar">
+                                <div id="focusBar" class="stat-bar-fill" style="--value: 50%"></div>
+                            </div>
+                            <span id="focusValue" class="stat-num">10</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Memory</label>
+                            <div class="stat-bar">
+                                <div id="memoryBar" class="stat-bar-fill" style="--value: 50%"></div>
+                            </div>
+                            <span id="memoryValue" class="stat-num">10</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Understanding</label>
+                            <div class="stat-bar">
+                                <div id="understandingBar" class="stat-bar-fill" style="--value: 50%"></div>
+                            </div>
+                            <span id="understandingValue" class="stat-num">10</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Accuracy</label>
+                            <div class="stat-bar">
+                                <div id="accuracyBar" class="stat-bar-fill" style="--value: 50%"></div>
+                            </div>
+                            <span id="accuracyValue" class="stat-num">10</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Mastery</label>
+                            <div class="stat-bar">
+                                <div id="masteryBar" class="stat-bar-fill" style="--value: 50%"></div>
+                            </div>
+                            <span id="masteryValue" class="stat-num">10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section: Quest Selection -->
+            <div class="right-panel">
+                <!-- Badges Section -->
+                <div class="badges-section">
+                    <h3>BADGES & REWARDS</h3>
+                    <div id="badgeContainer" class="badge-container">
+                        <div class="badge-empty">ยังไม่มีรางวัล</div>
+                    </div>
+                </div>
+
+                <!-- Quest Selection -->
+                <div class="quest-selection">
+                    <h2>SELECT QUEST</h2>
+                    <div class="quests-grid">
+                        <div class="quest-card" data-chapter="respiratory">
+                            <div class="quest-icon">🫁</div>
+                            <h3>ระบบหายใจ</h3>
+                            <p>Respiratory System</p>
+                            <span class="quest-status" id="quest-respiratory-status">Not Cleared</span>
+                        </div>
+                        <div class="quest-card" data-chapter="chemical">
+                            <div class="quest-icon">⚗️</div>
+                            <h3>พันธะเคมี</h3>
+                            <p>Chemical Bonds</p>
+                            <span class="quest-status" id="quest-chemical-status">Not Cleared</span>
+                        </div>
+                        <div class="quest-card" data-chapter="probability">
+                            <div class="quest-icon">🎲</div>
+                            <h3>ความน่าจะเป็น</h3>
+                            <p>Probability</p>
+                            <span class="quest-status" id="quest-probability-status">Not Cleared</span>
+                        </div>
+                        <div class="quest-card" data-chapter="vocabulary">
+                            <div class="quest-icon">📚</div>
+                            <h3>Vocabulary</h3>
+                            <p>English Words</p>
+                            <span class="quest-status" id="quest-vocabulary-status">Not Cleared</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Button -->
+                <div class="button-group">
+                    <button id="startQuestBtn" class="btn-primary" disabled>START QUEST</button>
+                    <button id="questLogBtn" class="btn-secondary">QUEST LOG</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Quest Display -->
+        <div id="selectedQuestDisplay" class="selected-quest-display" style="display: none;">
+            <p>Selected: <span id="selectedQuestName">-</span></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
