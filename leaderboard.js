@@ -32,9 +32,20 @@ function startBootSequence() {
     }, 1600);
 
     setTimeout(() => {
-        bootOverlay.classList.add('fade-out');
+        if (bootOverlay) {
+            bootOverlay.style.opacity = '0';
+            bootOverlay.style.pointerEvents = 'none';
+            bootOverlay.style.transition = 'opacity 0.5s ease-out';
+        }
         initializeLeaderboard();
     }, 2400);
+    
+    // Force remove overlay after animation
+    setTimeout(() => {
+        if (bootOverlay) {
+            bootOverlay.style.display = 'none';
+        }
+    }, 2900);
 }
 
 function initializeLeaderboard() {
