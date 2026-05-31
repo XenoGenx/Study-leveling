@@ -95,6 +95,16 @@ function setupTimerControls() {
     const pauseBtn = document.getElementById('pauseBtn');
     const resumeBtn = document.getElementById('resumeBtn');
     const finishBtn = document.getElementById('finishBtn');
+    const startBtn = document.getElementById('startBtn');
+    
+    // Setup Start button
+    if (startBtn) {
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            startTimer();
+            updateControlsVisibility();
+        });
+    }
     
     // Setup Pause button
     if (pauseBtn) {
@@ -106,19 +116,9 @@ function setupTimerControls() {
         resumeBtn.addEventListener('click', toggleResume);
     }
     
-    // Setup Finish button (initial state: START QUEST)
+    // Setup Finish button
     if (finishBtn) {
-        finishBtn.textContent = 'START QUEST';
-        finishBtn.classList.remove('prominent');
-        finishBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!isRunning) {
-                startTimer();
-                updateControlsVisibility();
-            } else {
-                finishQuest();
-            }
-        });
+        finishBtn.addEventListener('click', finishQuest);
     }
     
     // Update initial button visibility
@@ -279,54 +279,26 @@ function updateControlsVisibility() {
     const pauseBtn = document.getElementById('pauseBtn');
     const resumeBtn = document.getElementById('resumeBtn');
     const finishBtn = document.getElementById('finishBtn');
+    const startBtn = document.getElementById('startBtn');
     
     if (isRunning && !isPaused) {
-        // Timer running: PAUSE [FINISH] RESUME hidden
-        if (pauseBtn) {
-            pauseBtn.style.visibility = 'visible';
-            pauseBtn.style.pointerEvents = 'auto';
-        }
-        if (resumeBtn) {
-            resumeBtn.style.visibility = 'hidden';
-            resumeBtn.style.pointerEvents = 'none';
-        }
-        if (finishBtn) {
-            finishBtn.textContent = 'FINISH QUEST';
-            finishBtn.classList.remove('prominent');
-            finishBtn.style.visibility = 'visible';
-            finishBtn.style.pointerEvents = 'auto';
-        }
+        // Timer running: show PAUSE and FINISH, hide RESUME and START
+        if (pauseBtn) pauseBtn.classList.remove('hidden');
+        if (resumeBtn) resumeBtn.classList.add('hidden');
+        if (finishBtn) finishBtn.classList.remove('hidden');
+        if (startBtn) startBtn.classList.add('hidden');
     } else if (isRunning && isPaused) {
-        // Paused: PAUSE hidden [FINISH] RESUME
-        if (pauseBtn) {
-            pauseBtn.style.visibility = 'hidden';
-            pauseBtn.style.pointerEvents = 'none';
-        }
-        if (resumeBtn) {
-            resumeBtn.style.visibility = 'visible';
-            resumeBtn.style.pointerEvents = 'auto';
-        }
-        if (finishBtn) {
-            finishBtn.classList.remove('prominent');
-            finishBtn.style.visibility = 'visible';
-            finishBtn.style.pointerEvents = 'auto';
-        }
+        // Paused: show RESUME and FINISH, hide PAUSE and START
+        if (pauseBtn) pauseBtn.classList.add('hidden');
+        if (resumeBtn) resumeBtn.classList.remove('hidden');
+        if (finishBtn) finishBtn.classList.remove('hidden');
+        if (startBtn) startBtn.classList.add('hidden');
     } else {
-        // Initial state: [START QUEST] only
-        if (pauseBtn) {
-            pauseBtn.style.visibility = 'hidden';
-            pauseBtn.style.pointerEvents = 'none';
-        }
-        if (resumeBtn) {
-            resumeBtn.style.visibility = 'hidden';
-            resumeBtn.style.pointerEvents = 'none';
-        }
-        if (finishBtn) {
-            finishBtn.textContent = 'START QUEST';
-            finishBtn.classList.add('prominent');
-            finishBtn.style.visibility = 'visible';
-            finishBtn.style.pointerEvents = 'auto';
-        }
+        // Initial state: show START only
+        if (pauseBtn) pauseBtn.classList.add('hidden');
+        if (resumeBtn) resumeBtn.classList.add('hidden');
+        if (finishBtn) finishBtn.classList.add('hidden');
+        if (startBtn) startBtn.classList.remove('hidden');
     }
 }
 

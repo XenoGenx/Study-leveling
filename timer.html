@@ -5,179 +5,484 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Gate System - Timer</title>
     <link rel="stylesheet" href="style.css?v=2.0">
+    <style>
+        /* Timer Page Override Styles */
+        .timer-page {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f4a 50%, #0d1a3d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .timer-container-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 20px;
+        }
+
+        /* Header Section */
+        .timer-header-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .header-card {
+            background: rgba(30, 50, 120, 0.3);
+            border: 2px solid rgba(100, 200, 255, 0.4);
+            border-radius: 12px;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header-label {
+            font-size: 12px;
+            color: #88ccff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .header-value {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Main Timer Display */
+        .timer-display-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px;
+            background: rgba(10, 20, 60, 0.5);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(100, 200, 255, 0.1);
+            flex: 1;
+            min-height: 300px;
+        }
+
+        .timer-quest-name {
+            font-size: 24px;
+            color: #ffaa00;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .timer-circular-core {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .timer-big-display {
+            font-size: 80px;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                         0 0 40px rgba(0, 255, 255, 0.4);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            line-height: 1;
+        }
+
+        .timer-core-label {
+            font-size: 14px;
+            color: #88ccff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Status Info Grid */
+        .timer-status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .status-card {
+            background: rgba(50, 80, 150, 0.2);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .status-card-label {
+            font-size: 11px;
+            color: #88ccff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .status-card-value {
+            font-size: 20px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* Controls Section */
+        .timer-controls-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(10, 20, 60, 0.4);
+            border-top: 2px solid rgba(100, 200, 255, 0.2);
+            border-radius: 15px;
+        }
+
+        .control-btn {
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-pause {
+            background: linear-gradient(135deg, #00ccff, #0099ff);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.6);
+        }
+
+        .btn-pause:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 200, 255, 0.8);
+        }
+
+        .btn-resume {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 150, 0.5);
+            border: 2px solid rgba(0, 255, 150, 0.6);
+        }
+
+        .btn-resume:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 150, 0.8);
+        }
+
+        .btn-finish {
+            background: linear-gradient(135deg, #ff0099, #ff0055);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 150, 0.5);
+            border: 2px solid rgba(255, 0, 150, 0.6);
+            min-width: 220px;
+        }
+
+        .btn-finish:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 0, 150, 0.8);
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #ffaa00, #ff8800);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.5);
+            border: 2px solid rgba(255, 170, 0, 0.6);
+            min-width: 220px;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.8);
+        }
+
+        /* Hidden by default */
+        .control-btn.hidden {
+            display: none;
+        }
+
+        /* Motivational Message */
+        .motivational-message {
+            text-align: center;
+            font-size: 14px;
+            color: #88ccff;
+            font-style: italic;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        /* Details Section */
+        .timer-details-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .details-card {
+            background: rgba(30, 50, 120, 0.3);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .details-title {
+            font-size: 13px;
+            color: #88ccff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            color: #fff;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #88ccff;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #ffff00;
+        }
+
+        /* Boot Overlay */
+        .timer-boot-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            animation: fadeOut 2.5s ease-out forwards;
+        }
+
+        .boot-message {
+            font-size: 18px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: bootSequence 0.6s ease-out forwards;
+        }
+
+        .boot-message:nth-child(1) { animation-delay: 0.3s; }
+        .boot-message:nth-child(2) { animation-delay: 0.9s; }
+        .boot-message:nth-child(3) { animation-delay: 1.5s; }
+
+        @keyframes bootSequence {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; pointer-events: none; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .timer-status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .timer-details-section {
+                grid-template-columns: 1fr;
+            }
+
+            .timer-header-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .timer-page {
+                padding: 10px;
+                gap: 15px;
+            }
+
+            .timer-header-section {
+                grid-template-columns: 1fr;
+            }
+
+            .timer-big-display {
+                font-size: 60px;
+            }
+
+            .control-btn {
+                padding: 12px 30px;
+                font-size: 14px;
+                min-width: 140px;
+            }
+
+            .timer-controls-wrapper {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .timer-display-section {
+                padding: 25px;
+                min-height: 250px;
+            }
+        }
+    </style>
 </head>
 <body class="timer-page">
-    <!-- TIMER BOOT SEQUENCE -->
+    <!-- BOOT OVERLAY -->
     <div class="timer-boot-overlay" id="timerBootOverlay">
-        <div class="timer-boot-message">SYSTEM LINKING...</div>
-        <div class="timer-boot-message">QUEST DATA LOADED</div>
-        <div class="timer-boot-message">FOCUS MODE ACTIVATED</div>
+        <div class="boot-message">SYSTEM LINKING...</div>
+        <div class="boot-message">QUEST DATA LOADED</div>
+        <div class="boot-message">FOCUS MODE ACTIVATED</div>
     </div>
 
-    <!-- PORTAL BACKGROUND -->
-    <div class="portal-background">
-        <div class="portal-glow portal-glow-1"></div>
-        <div class="portal-glow portal-glow-2"></div>
-    </div>
-
-    <!-- SCAN LINES OVERLAY -->
-    <div class="scan-lines"></div>
-
-    <!-- TIMER WRAPPER -->
-    <div class="timer-wrapper">
-        <!-- TIMER HEADER -->
-        <div class="timer-header">
-            <div class="timer-header-left">
-                <div class="quest-status-label">
-                    QUEST IN PROGRESS
-                </div>
-                <div class="hunter-info">
-                    <div class="hunter-name-display" id="hunterNameDisplay">Hunter</div>
-                    <div class="hunter-rank-level">
-                        <div class="rank-badge">
-                            <span>Rank:</span>
-                            <span class="rank-badge-value" id="hunterRankDisplay">E</span>
-                        </div>
-                        <div class="level-badge">
-                            <span>Level:</span>
-                            <span class="level-badge-value" id="hunterLevelDisplay">1</span>
-                        </div>
-                    </div>
+    <!-- MAIN CONTAINER -->
+    <div class="timer-container-wrapper">
+        <!-- HEADER INFO -->
+        <div class="timer-header-section">
+            <div class="header-card">
+                <div class="header-label">🎮 Hunter</div>
+                <div class="header-value" id="hunterNameDisplay">Hunter</div>
+            </div>
+            <div class="header-card">
+                <div class="header-label">📊 Rank / Level</div>
+                <div class="header-value">
+                    <span id="hunterRankDisplay">E</span> / 
+                    <span id="hunterLevelDisplay">1</span>
                 </div>
             </div>
-            <div class="focus-mode-indicator">
-                <span class="focus-indicator-dot"></span>
-                <span>FOCUS MODE ACTIVE</span>
+            <div class="header-card">
+                <div class="header-label">🎯 Focus Mode</div>
+                <div class="header-value" style="color: #00ff88;">ACTIVE</div>
             </div>
         </div>
 
-        <!-- MAIN TIMER CONTAINER -->
-        <div class="timer-main-container">
-            <!-- LEFT PANEL: QUEST OBJECTIVE -->
-            <div class="timer-panel timer-panel-left">
-                <div class="timer-panel-header">
-                    <span class="panel-header-bracket">[</span>
-                    <span>QUEST OBJECTIVE</span>
-                    <span class="panel-header-bracket">]</span>
+        <!-- MAIN TIMER DISPLAY -->
+        <div class="timer-display-section">
+            <div class="timer-quest-name" id="questNameDisplay">Quest Name</div>
+
+            <div class="timer-circular-core">
+                <div class="timer-big-display" id="timerTimeDisplay">00:00</div>
+                <div class="timer-core-label">QUEST TIMER CORE</div>
+            </div>
+
+            <!-- STATUS GRID -->
+            <div class="timer-status-grid">
+                <div class="status-card">
+                    <div class="status-card-label">Difficulty</div>
+                    <div class="status-card-value" id="difficultyBadgeDisplay">Easy</div>
                 </div>
-                
-                <div class="objective-item">
-                    <div class="objective-label">📖 Target</div>
-                    <div class="objective-value">Read until timer ends</div>
+                <div class="status-card">
+                    <div class="status-card-label">Progress</div>
+                    <div class="status-card-value" id="progressPercentageDisplay">0%</div>
                 </div>
-                
-                <div class="objective-item">
-                    <div class="objective-label">⏱️ Session Time</div>
-                    <div class="objective-value" id="sessionTimeDisplay">00:00 / 00:00</div>
+                <div class="status-card">
+                    <div class="status-card-label">Focus</div>
+                    <div class="status-card-value" id="focusStabilityValue">100%</div>
                 </div>
-                
-                <div class="objective-item">
-                    <div class="objective-label">⚠️ Warning</div>
-                    <div class="objective-value">Do not break focus</div>
-                </div>
-                
-                <div class="objective-item">
-                    <div class="objective-label">💡 Tip</div>
-                    <div class="objective-value">Minimize distractions for optimal focus</div>
+                <div class="status-card">
+                    <div class="status-card-label">Reward</div>
+                    <div class="status-card-value" id="rewardValue">0 EXP</div>
                 </div>
             </div>
 
-            <!-- CENTER PANEL: QUEST TIMER CORE -->
-            <div class="timer-panel timer-panel-center scanline">
-                <div class="timer-core-display">
-                    <!-- Circular Timer Ring -->
-                    <div class="timer-ring-wrapper">
-                        <div class="timer-circular-progress">
-                            <div class="timer-display-content">
-                                <span class="timer-time-display" id="timerTimeDisplay">00:00</span>
-                                <div class="timer-time-label">QUEST TIMER CORE</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quest Information -->
-                    <div class="quest-name-display" id="questNameDisplay">Quest Name</div>
-                    <div class="difficulty-badge" id="difficultyBadgeDisplay">Easy</div>
-                    <div class="progress-percentage" id="progressPercentageDisplay">0% Complete</div>
-                </div>
-            </div>
-
-            <!-- RIGHT PANEL: FOCUS STATUS -->
-            <div class="timer-panel timer-panel-right">
-                <div class="timer-panel-header">
-                    <span class="panel-header-bracket">[</span>
-                    <span>FOCUS STATUS</span>
-                    <span class="panel-header-bracket">]</span>
-                </div>
-                
-                <div class="status-bar-item">
-                    <div class="status-bar-label">
-                        <span>🎯 Focus Stability</span>
-                        <span class="status-bar-value" id="focusStabilityValue">100%</span>
-                    </div>
-                    <div class="status-bar-bg">
-                        <div class="status-bar-fill" id="focusStabilityBar" style="width: 100%;"></div>
-                    </div>
-                </div>
-                
-                <div class="status-bar-item">
-                    <div class="status-bar-label">
-                        <span>📊 Session Progress</span>
-                        <span class="status-bar-value" id="sessionProgressValue">0%</span>
-                    </div>
-                    <div class="status-bar-bg">
-                        <div class="status-bar-fill" id="sessionProgressBar" style="width: 0%;"></div>
-                    </div>
-                </div>
-                
-                <div class="status-bar-item">
-                    <div class="status-bar-label">
-                        <span>🔥 Streak</span>
-                        <span class="status-bar-value" id="streakValue">0</span>
-                    </div>
-                    <div class="status-bar-bg">
-                        <div class="status-bar-fill" id="streakBar" style="width: 0%;"></div>
-                    </div>
-                </div>
-                
-                <div class="status-bar-item">
-                    <div class="status-bar-label">
-                        <span>🏆 Estimated Reward</span>
-                        <span class="status-bar-value" id="rewardValue">0 EXP</span>
-                    </div>
-                    <div class="status-bar-bg">
-                        <div class="status-bar-fill" id="rewardBar" style="width: 50%;"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- MOTIVATIONAL MESSAGE -->
+            <div class="motivational-message" id="systemMessageBox">> SYSTEM READY</div>
         </div>
 
-        <!-- SYSTEM MESSAGE BOX -->
-        <div class="system-message-box" id="systemMessageBox">
-            > SYSTEM READY
+        <!-- CONTROL BUTTONS -->
+        <div class="timer-controls-wrapper">
+            <button class="control-btn btn-pause hidden" id="pauseBtn">⏸ PAUSE</button>
+            <button class="control-btn btn-resume hidden" id="resumeBtn">▶ RESUME</button>
+            <button class="control-btn btn-finish hidden" id="finishBtn">✓ FINISH QUEST</button>
+            <button class="control-btn btn-start" id="startBtn">▶ START QUEST</button>
         </div>
 
-        <!-- TIMER CONTROLS -->
-        <div class="timer-controls-section">
-            <button class="timer-btn btn-pause-timer" id="pauseBtn">
-                PAUSE
-            </button>
-            <button class="timer-btn btn-finish-timer prominent" id="finishBtn">
-                FINISH QUEST
-            </button>
-            <button class="timer-btn btn-resume-timer" id="resumeBtn">
-                RESUME
-            </button>
+        <!-- DETAILS SECTION -->
+        <div class="timer-details-section">
+            <div class="details-card">
+                <div class="details-title">[📖 Quest Objective]</div>
+                <div class="detail-item">
+                    <span class="detail-label">Target:</span>
+                    <span class="detail-value">Read until timer ends</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Session Time:</span>
+                    <span class="detail-value" id="sessionTimeDisplay">00:00 / 00:00</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Warning:</span>
+                    <span class="detail-value">Do not break focus</span>
+                </div>
+            </div>
+
+            <div class="details-card">
+                <div class="details-title">[📊 Focus Status]</div>
+                <div class="detail-item">
+                    <span class="detail-label">🎯 Stability:</span>
+                    <span class="detail-value" id="focusStabilityValueDetail">100%</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">📈 Session Progress:</span>
+                    <span class="detail-value" id="sessionProgressValue">0%</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">🔥 Streak:</span>
+                    <span class="detail-value" id="streakValue">0</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">💡 Tip:</span>
+                    <span class="detail-value">Minimize distractions</span>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- QUEST SAVE OVERLAY -->
-    <div class="quest-save-overlay" id="questSaveOverlay">
-        <div class="save-message">QUEST DATA SAVED</div>
-    </div>
-
-    <!-- PAUSED INDICATOR -->
-    <div class="paused-indicator" id="pausedIndicator">SYSTEM PAUSED</div>
 
     <script src="script.js?v=2.0"></script>
     <script src="timer.js?v=2.0"></script>
