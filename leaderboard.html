@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Gate System - Hunter Leaderboard</title>
+    <link rel="stylesheet" href="style.css?v=2.1">
+</head>
+<body class="leaderboard-page">
+    <!-- PORTAL BACKGROUND -->
+    <div class="portal-background">
+        <div class="portal-glow portal-glow-1"></div>
+        <div class="portal-glow portal-glow-2"></div>
+    </div>
+
+    <!-- PARTICLE SYSTEM -->
+    <div class="particle-container">
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+        <div class="particle purple"></div>
+        <div class="particle cyan"></div>
+        <div class="particle blue"></div>
+    </div>
+
+    <!-- SCAN LINES OVERLAY -->
+    <div class="scan-lines"></div>
+
+    <!-- SYSTEM BOOTING SEQUENCE -->
+    <div class="system-boot-overlay" id="bootOverlay">
+        <div class="boot-message">
+            <div class="boot-line" id="bootLine1">▸ RANKING SYSTEM ONLINE</div>
+            <div class="boot-line" id="bootLine2" style="display:none;">▸ HUNTER DATA SCANNING...</div>
+            <div class="boot-line" id="bootLine3" style="display:none;">▸ LEADERBOARD LOADED</div>
+            <div class="boot-cursor"></div>
+        </div>
+    </div>
+
+    <!-- SYSTEM INTERFACE HEADER -->
+    <div class="leaderboard-header">
+        <div class="header-label">HUNTER LEADERBOARD - RANKING DATA OF ALL REGISTERED HUNTERS</div>
+        <div class="header-controls">
+            <button id="backBtn" class="btn-back">
+                <span class="btn-text">BACK TO DASHBOARD</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN LEADERBOARD CONTAINER -->
+    <div class="leaderboard-container">
+        <!-- MY RANKING SECTION -->
+        <div class="my-ranking-section">
+            <div class="ranking-card my-rank-card">
+                <div class="card-header">
+                    <h3>MY CURRENT RANK</h3>
+                </div>
+                <div class="card-content">
+                    <div class="my-rank-info">
+                        <div class="info-item">
+                            <span class="label">Hunter:</span>
+                            <span class="value" id="myHunterName">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Position:</span>
+                            <span class="value" id="myPosition">#--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">EXP:</span>
+                            <span class="value" id="myExp">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Rank:</span>
+                            <span class="value rank-badge" id="myRank">E</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Level:</span>
+                            <span class="value" id="myLevel">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROLS SECTION -->
+        <div class="leaderboard-controls">
+            <button id="refreshBtn" class="btn-control">
+                <span>⟳ REFRESH RANKING</span>
+            </button>
+            
+            <div class="sort-buttons">
+                <button class="btn-sort active" data-sort="exp">EXP</button>
+                <button class="btn-sort" data-sort="level">LEVEL</button>
+                <button class="btn-sort" data-sort="quests">QUESTS</button>
+                <button class="btn-sort" data-sort="study">STUDY TIME</button>
+                <button class="btn-sort" data-sort="mastery">MASTERY</button>
+                <button class="btn-sort" data-sort="streak">STREAK</button>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD CONTENT -->
+        <div class="leaderboard-content">
+            <div id="leaderboardContainer" class="leaderboard-list">
+                <div class="loading-text">Loading ranking data...</div>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD STATS -->
+        <div class="leaderboard-stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Hunters</div>
+                <div class="stat-value" id="totalHunters">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Top Hunter EXP</div>
+                <div class="stat-value" id="topExp">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Average Level</div>
+                <div class="stat-value" id="avgLevel">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Quests</div>
+                <div class="stat-value" id="totalQuests">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="leaderboard-footer">
+        <p class="footer-note">※ Local Leaderboard - Rankings are device-specific only</p>
+    </div>
+
+    <script src="script.js?v=2.1"></script>
+    <script src="leaderboard.js?v=2.1"></script>
+</body>
+</html>

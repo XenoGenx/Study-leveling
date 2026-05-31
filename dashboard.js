@@ -254,6 +254,11 @@ function displayStatusPanel(player) {
 }
 
 function setupEventListeners() {
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    leaderboardBtn.addEventListener('click', () => {
+        window.location.href = 'leaderboard.html';
+    });
+
     const logoutBtn = document.getElementById('logoutBtn');
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('currentPlayer');
