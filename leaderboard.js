@@ -47,8 +47,8 @@ function initializeLeaderboard() {
     // Initialize UI
     setupEventListeners();
     
-    // Display leaderboard with default sort (EXP)
-    displayLeaderboard('exp');
+    // Display leaderboard (always sorted by study hours + rank)
+    displayLeaderboard();
     
     // Update my ranking
     updateMyRanking();
@@ -136,60 +136,24 @@ function getLatestBadge(badges) {
 // ========================================
 
 /**
- * Sort hunters by specified criteria (optimized)
- * Priority: EXP > Level > Quests > Mastery > Study Time
+ * Sort hunters by Study Hours first, then Rank (optimized)
  */
 function sortHunters(sortBy) {
     sortedHunters = [...allHunters];
     
-    // Single optimized sort function
+    // Single optimized sort function - prioritize study hours and rank
     sortedHunters.sort((a, b) => {
-        let comparison = 0;
+        // Primary: Study Hours (descending)
+        let comparison = b.totalStudyTime - a.totalStudyTime;
+        if (comparison !== 0) return comparison;
 
-        switch (sortBy) {
-            case 'exp':
-                comparison = b.exp - a.exp;
-                break;
-            case 'level':
-                comparison = b.level - a.level;
-                if (comparison === 0) comparison = b.exp - a.exp;
-                break;
-            case 'quests':
-                comparison = b.completedQuests - a.completedQuests;
-                if (comparison === 0) comparison = b.exp - a.exp;
-                break;
-            case 'study':
-                comparison = b.totalStudyTime - a.totalStudyTime;
-                if (comparison === 0) comparison = b.exp - a.exp;
-                break;
-            case 'mastery':
-                comparison = b.mastery - a.mastery;
-                if (comparison === 0) comparison = b.exp - a.exp;
-                break;
-            case 'streak':
-                comparison = b.streak - a.streak;
-                if (comparison === 0) comparison = b.exp - a.exp;
-                break;
-        }
+        // Secondary: Rank (E=0, D=1, C=2, B=3, A=4, S=5)
+        const rankOrder = { 'E': 0, 'D': 1, 'C': 2, 'B': 3, 'A': 4, 'S': 5 };
+        const rankDiff = (rankOrder[b.rank] || 0) - (rankOrder[a.rank] || 0);
+        if (rankDiff !== 0) return rankDiff;
 
-        // Fallback chain for ties
-        if (comparison === 0) {
-            comparison = b.exp - a.exp;
-            if (comparison === 0) {
-                comparison = b.level - a.level;
-                if (comparison === 0) {
-                    comparison = b.completedQuests - a.completedQuests;
-                    if (comparison === 0) {
-                        comparison = b.mastery - a.mastery;
-                        if (comparison === 0) {
-                            comparison = b.totalStudyTime - a.totalStudyTime;
-                        }
-                    }
-                }
-            }
-        }
-
-        return comparison;
+        // Tertiary: EXP (for same rank)
+        return b.exp - a.exp;
     });
 }
 
@@ -211,11 +175,10 @@ function getHunterRank(hunterName) {
 // ========================================
 
 /**
- * Display leaderboard with specified sort (rendering optimized)
+ * Display leaderboard (simplified - always sorted by study hours + rank)
  */
-function displayLeaderboard(sortBy) {
-    currentSort = sortBy;
-    sortHunters(sortBy);
+function displayLeaderboard() {
+    sortHunters();
 
     const container = document.getElementById('leaderboardContainer');
     
@@ -224,7 +187,7 @@ function displayLeaderboard(sortBy) {
         return;
     }
 
-    // Build HTML string once (faster than appendChild multiple times)
+    // Build HTML string once
     let html = '';
     const top3Count = Math.min(3, sortedHunters.length);
 
@@ -249,14 +212,14 @@ function displayLeaderboard(sortBy) {
     // Set all HTML at once
     container.innerHTML = html;
     
-    // Animate rows using RAF for smooth rendering
+    // Animate rows using RAF
     requestAnimationFrame(() => {
         animateLeaderboardRows();
     });
 }
 
 /**
- * Render Top 3 hunter cards (optimized string building)
+ * Render Top 3 hunter cards (simplified)
  */
 function renderTopHunterCard(hunter, rank, isCurrentPlayer) {
     const badgeData = [
@@ -268,7 +231,7 @@ function renderTopHunterCard(hunter, rank, isCurrentPlayer) {
     const badge = badgeData[rank - 1];
     const rankClass = `rank-${rank}`;
     const highlightClass = isCurrentPlayer ? 'current-player' : '';
-    const studyTimeStr = formatStudyTime(hunter.totalStudyTime);
+    const studyHours = Math.floor(hunter.totalStudyTime / 60);
     const hunterNameEsc = escapeHtml(hunter.name);
 
     return `<div class="top-hunter-card ${rankClass} ${highlightClass}" style="animation-delay: ${(rank - 1) * 0.15}s;">
@@ -284,22 +247,9 @@ function renderTopHunterCard(hunter, rank, isCurrentPlayer) {
                     <span class="detail-value rank-symbol">${hunter.rank}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">Level</span>
-                    <span class="detail-value">${hunter.level}</span>
+                    <span class="detail-label">Study Hours</span>
+                    <span class="detail-value">${studyHours}h</span>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">EXP</span>
-                    <span class="detail-value">${hunter.exp.toLocaleString()}</span>
-                </div>
-            </div>
-            <div class="hunter-stats">
-                <div class="stat"><span class="stat-icon">⚔️</span><span>${hunter.completedQuests} Quests</span></div>
-                <div class="stat"><span class="stat-icon">📖</span><span>${studyTimeStr}</span></div>
-                <div class="stat"><span class="stat-icon">🎯</span><span>${hunter.mastery}% Mastery</span></div>
-                <div class="stat"><span class="stat-icon">🔥</span><span>${hunter.streak} Streak</span></div>
-            </div>
-            <div class="hunter-badge-item">
-                <span class="badge-text">${hunter.lastBadge}</span>
             </div>
         </div>
         <div class="glow-effect"></div>
@@ -307,10 +257,10 @@ function renderTopHunterCard(hunter, rank, isCurrentPlayer) {
 }
 
 /**
- * Render regular hunter row (optimized)
+ * Render regular hunter row (simplified)
  */
 function renderHunterRow(hunter, rank, isCurrentPlayer) {
-    const studyTimeStr = formatStudyTime(hunter.totalStudyTime);
+    const studyHours = Math.floor(hunter.totalStudyTime / 60);
     const highlightClass = isCurrentPlayer ? 'current-player' : '';
     const hunterNameEsc = escapeHtml(hunter.name);
 
@@ -318,12 +268,7 @@ function renderHunterRow(hunter, rank, isCurrentPlayer) {
         <div class="rank-number">#${rank}</div>
         <div class="rank-name">${hunterNameEsc}</div>
         <div class="rank-stat"><span class="rank-badge">${hunter.rank}</span></div>
-        <div class="rank-stat">Lv ${hunter.level}</div>
-        <div class="rank-stat">${hunter.exp.toLocaleString()} EXP</div>
-        <div class="rank-stat">${hunter.completedQuests} ⚔️</div>
-        <div class="rank-stat">${studyTimeStr}</div>
-        <div class="rank-stat">${hunter.mastery}%</div>
-        <div class="rank-stat">${hunter.streak}🔥</div>
+        <div class="rank-stat">${studyHours}h</div>
     </div>`;
 }
 
@@ -447,20 +392,11 @@ function updateLeaderboardStats() {
 // ========================================
 
 /**
- * Setup all event listeners
+ * Setup all event listeners (simplified)
  */
 function setupEventListeners() {
     document.getElementById('backBtn').addEventListener('click', goBackToDashboard);
     document.getElementById('refreshBtn').addEventListener('click', refreshLeaderboard);
-
-    const sortButtons = document.querySelectorAll('.btn-sort');
-    sortButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            sortButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            displayLeaderboard(this.dataset.sort);
-        });
-    });
 }
 
 /**
@@ -478,7 +414,7 @@ function refreshLeaderboard() {
     huntersCache = null;
     
     loadAllHuntersData();
-    displayLeaderboard(currentSort);
+    displayLeaderboard();
     updateMyRanking();
     updateLeaderboardStats();
     

@@ -3684,37 +3684,6 @@ a:hover {
     transform: scale(1.05);
 }
 
-.sort-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.btn-sort {
-    padding: 8px 15px;
-    background: rgba(217, 70, 239, 0.1);
-    border: 2px solid var(--neon-purple);
-    color: var(--neon-purple);
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-transform: uppercase;
-    border-radius: 0;
-    font-size: 0.85rem;
-}
-
-.btn-sort:hover {
-    background: rgba(217, 70, 239, 0.2);
-    box-shadow: 0 0 15px rgba(217, 70, 239, 0.3);
-}
-
-.btn-sort.active {
-    background: rgba(217, 70, 239, 0.3);
-    box-shadow: 0 0 20px rgba(217, 70, 239, 0.5);
-    border-color: var(--neon-cyan);
-    color: var(--neon-cyan);
-}
-
 /* Leaderboard Content */
 .leaderboard-content {
     background: rgba(13, 27, 77, 0.6);
@@ -3947,7 +3916,7 @@ a:hover {
 
 .hunter-row {
     display: grid;
-    grid-template-columns: 50px 150px 60px 80px 120px 100px 120px 100px 80px;
+    grid-template-columns: 50px 200px 80px 100px;
     gap: 15px;
     align-items: center;
     padding: 15px;
@@ -4083,18 +4052,18 @@ a:hover {
 /* Responsive Design */
 @media (max-width: 1024px) {
     .hunter-row {
-        grid-template-columns: 40px 120px 50px 60px 90px 80px 90px 70px 60px;
+        grid-template-columns: 40px 160px 60px 80px;
         gap: 10px;
         padding: 12px;
         font-size: 0.85rem;
     }
 
     .hunter-details {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
     }
 
     .hunter-stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
     }
 
     .my-rank-info {
@@ -4126,7 +4095,7 @@ a:hover {
     }
 
     .hunter-row {
-        grid-template-columns: 30px 100px 45px 50px 70px 60px 70px 50px 45px;
+        grid-template-columns: 30px 120px 50px 70px;
         gap: 8px;
         padding: 10px;
         font-size: 0.75rem;
@@ -4160,17 +4129,6 @@ a:hover {
         flex-direction: column;
     }
 
-    .sort-buttons {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .btn-sort {
-        flex: 1;
-        font-size: 0.75rem;
-        padding: 6px 10px;
-    }
-
     .leaderboard-stats {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -4183,7 +4141,7 @@ a:hover {
     }
 
     .hunter-row {
-        grid-template-columns: 25px 80px 40px 40px 55px 50px 55px 40px 35px;
+        grid-template-columns: 25px 100px 40px 50px;
         gap: 5px;
         padding: 8px;
         font-size: 0.65rem;
@@ -4210,14 +4168,5 @@ a:hover {
         width: 100%;
         padding: 10px;
         font-size: 0.8rem;
-    }
-
-    .sort-buttons {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .btn-sort {
-        width: 100%;
     }
 }
