@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Gate System - Timer</title>
-    <link rel="stylesheet" href="style.css?v=2.1">
+    <link rel="stylesheet" href="style.css?v=2.4">
     <style>
         /* Timer Page Override Styles */
         .timer-page {
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f4a 50%, #0d1a3d 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             padding: 20px;
             gap: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .timer-container-wrapper {
@@ -369,11 +371,18 @@
         @media (max-width: 768px) {
             .timer-page {
                 padding: 10px;
-                gap: 15px;
+                gap: 12px;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .timer-container-wrapper {
+                gap: 12px;
             }
 
             .timer-header-section {
                 grid-template-columns: 1fr;
+                margin-bottom: 5px;
             }
 
             .timer-big-display {
@@ -389,11 +398,101 @@
             .timer-controls-wrapper {
                 flex-direction: column;
                 gap: 10px;
+                padding: 15px;
             }
 
             .timer-display-section {
-                padding: 25px;
-                min-height: 250px;
+                padding: 20px;
+                flex: 0 0 auto;
+                min-height: auto;
+                gap: 20px;
+            }
+
+            .timer-details-section {
+                gap: 12px;
+            }
+
+            .details-card {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timer-page {
+                padding: 8px;
+                gap: 10px;
+            }
+
+            .timer-container-wrapper {
+                gap: 10px;
+            }
+
+            .timer-header-section {
+                gap: 10px;
+            }
+
+            .header-card {
+                padding: 12px 15px;
+                gap: 6px;
+            }
+
+            .header-label {
+                font-size: 11px;
+            }
+
+            .header-value {
+                font-size: 16px;
+            }
+
+            .timer-display-section {
+                padding: 15px;
+                gap: 15px;
+                min-height: auto;
+            }
+
+            .timer-quest-name {
+                font-size: 18px;
+            }
+
+            .timer-big-display {
+                font-size: 48px;
+            }
+
+            .status-card {
+                padding: 12px;
+            }
+
+            .status-card-label {
+                font-size: 10px;
+            }
+
+            .status-card-value {
+                font-size: 16px;
+            }
+
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 13px;
+                min-width: 120px;
+            }
+
+            .timer-controls-wrapper {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .details-card {
+                padding: 12px;
+            }
+
+            .details-title {
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .detail-item {
+                padding: 6px 0;
+                font-size: 13px;
             }
         }
     </style>
@@ -508,8 +607,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=2.2"></script>
-    <script src="timer.js?v=2.2"></script>
+    <script src="script.js?v=2.4"></script>
+    <script src="timer.js?v=2.4"></script>
 </body>
 </html>
 
