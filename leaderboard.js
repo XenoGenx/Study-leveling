@@ -147,23 +147,23 @@ function getLatestBadge(badges) {
 // ========================================
 
 /**
- * Sort hunters by Study Hours first, then Rank (optimized)
+ * Sort hunters by Rank first, then Study Hours (optimized)
  */
 function sortHunters(sortBy) {
     sortedHunters = [...allHunters];
     
-    // Single optimized sort function - prioritize study hours and rank
+    // Single optimized sort function - prioritize rank first
     sortedHunters.sort((a, b) => {
-        // Primary: Study Hours (descending)
-        let comparison = b.totalStudyTime - a.totalStudyTime;
-        if (comparison !== 0) return comparison;
-
-        // Secondary: Rank (E=0, D=1, C=2, B=3, A=4, S=5)
+        // Primary: Rank (E=0, D=1, C=2, B=3, A=4, S=5) - descending so S is first
         const rankOrder = { 'E': 0, 'D': 1, 'C': 2, 'B': 3, 'A': 4, 'S': 5 };
         const rankDiff = (rankOrder[b.rank] || 0) - (rankOrder[a.rank] || 0);
         if (rankDiff !== 0) return rankDiff;
 
-        // Tertiary: EXP (for same rank)
+        // Secondary: Study Hours (descending)
+        let comparison = b.totalStudyTime - a.totalStudyTime;
+        if (comparison !== 0) return comparison;
+
+        // Tertiary: EXP (for same rank and study hours)
         return b.exp - a.exp;
     });
 }
