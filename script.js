@@ -498,7 +498,18 @@ function calculateQuestExp(readingTime, targetTime, difficulty, quizScore, strea
     if (streak >= 7) bonusExp += 25;
     else if (streak >= 3) bonusExp += 15;
     
-    const totalExp = baseExp + bonusExp;
+    let totalExp = baseExp + bonusExp;
+    
+    // Time Completion Multiplier - ลดEXPตามเวลาที่อ่านไม่เต็ม
+    const timePercentage = (readingTime / targetTime) * 100;
+    if (timePercentage < 60) {
+        // ไม่ถึง 60% = 50% EXP
+        totalExp = Math.floor(totalExp * 0.5);
+    } else if (timePercentage < 80) {
+        // 60-79% = 75% EXP
+        totalExp = Math.floor(totalExp * 0.75);
+    }
+    // 80% ขึ้นไป = 100% EXP (ไม่มีการลด)
     
     return {
         baseExp: Math.floor(baseExp),
