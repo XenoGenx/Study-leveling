@@ -2945,7 +2945,6 @@ a:hover {
     color: var(--neon-green);
     border-color: var(--neon-green);
     box-shadow: 0 0 20px rgba(0, 255, 153, 0.3);
-    display: none;
 }
 
 .btn-resume-timer:hover {
