@@ -704,6 +704,139 @@ function getRankName(rank) {
 }
 
 /**
+ * Badge Database - รายละเอียดของ Badge ทั้งหมด
+ */
+const BADGE_DATABASE = {
+    'First Clear': {
+        id: 'first-clear',
+        name: 'First Clear',
+        icon: '🗝️',
+        rarity: 'Common',
+        category: 'Quest',
+        description: 'จุดเริ่มต้นของผู้เรียนใหม่',
+        lore: 'ทุกการเติบโตเริ่มจากการก้าวผ่านประตูแรก',
+        condition: 'ทำเควสแรกสำเร็จ',
+        reward: 'ยืนยันการเริ่มต้นเส้นทางนักอ่าน'
+    },
+    'Focus Hunter': {
+        id: 'focus-hunter',
+        name: 'Focus Hunter',
+        icon: '🎯',
+        rarity: 'Common',
+        category: 'Time',
+        description: 'ผู้ล่าแห่งความมุ่งเน้น',
+        lore: 'เวลา คือสินทรัพย์ที่ล้ำค่า เมื่อคุณใช้มันอย่างชาญฉลาด',
+        condition: 'อ่านรวมเกิน 10 ชั่วโมง',
+        reward: 'สัญลักษณ์ของความพยายามระยะยาว'
+    },
+    'Perfect Memory': {
+        id: 'perfect-memory',
+        name: 'Perfect Memory',
+        icon: '💯',
+        rarity: 'Rare',
+        category: 'Quiz',
+        description: 'ความจำแบบไร้ข้อผิดพลาด',
+        lore: 'ไม่มีคำถามใดหลุดรอดจากสายตาของคุณ',
+        condition: 'ทำ Quiz ได้ 100%',
+        reward: 'แสดงถึงความแม่นยำและความเข้าใจระดับสูง'
+    },
+    'Streak Keeper': {
+        id: 'streak-keeper',
+        name: 'Streak Keeper',
+        icon: '🔥',
+        rarity: 'Rare',
+        category: 'Streak',
+        description: 'ผู้ดูแลสายสตรีม',
+        lore: 'วินัยที่ทำซ้ำทุกวัน จะกลายเป็นพลังที่คนอื่นตามไม่ทัน',
+        condition: 'อ่านต่อเนื่อง 7 วัน',
+        reward: 'สัญลักษณ์ของความสม่ำเสมอ'
+    },
+    'Knowledge Seeker': {
+        id: 'knowledge-seeker',
+        name: 'Knowledge Seeker',
+        icon: '📚',
+        rarity: 'Epic',
+        category: 'Mastery',
+        description: 'ผู้ค้นหาความรู้อย่างเห็นแก่ตัว',
+        lore: 'ความกระหายหลัง "ทำไม" ของคุณเป็นแรงผลักดันที่ยิ่งใหญ่',
+        condition: 'ทำเควส 10 ครั้ง',
+        reward: 'การกำหนดตัวอักษรของนักเรียนจริง'
+    },
+    'Night Scholar': {
+        id: 'night-scholar',
+        name: 'Night Scholar',
+        icon: '🌙',
+        rarity: 'Epic',
+        category: 'Time',
+        description: 'นักวิชาการแห่งค่ำคืน',
+        lore: 'เมื่อเหล่านักเรียนอื่น ๆ นอนหลับ คุณเลือกอ่านต่อ',
+        condition: 'ทำเควสในเวลา 22:00 - 06:00',
+        reward: 'ความมุ่งมั่นที่อาจนำไปสู่ความสำเร็จ'
+    }
+};
+
+/**
+ * Skill Card Database - รายละเอียดของ Skill ทั้งหมด
+ */
+const SKILL_DATABASE = {
+    'Concentration Boost': {
+        id: 'concentration',
+        name: 'Concentration Boost',
+        icon: '🧠',
+        type: 'Focus',
+        rarity: 'Common',
+        description: 'พลังสมาธิเพิ่มขึ้นจากการอ่านต่อเนื่อง',
+        lore: 'สมาธิเริ่มไหลรวมเป็นพลัง',
+        effect: 'ช่วยเพิ่มค่า Focus จากเควสที่อ่านครบเวลา',
+        howToGet: 'ทำ Quiz ได้มากกว่า 70%'
+    },
+    'Memory Spark': {
+        id: 'memory',
+        name: 'Memory Spark',
+        icon: '⚡',
+        type: 'Memory',
+        rarity: 'Common',
+        description: 'ความจำเริ่มทำงานดีขึ้น',
+        lore: 'ประกายความจำถูกจุดขึ้นจากการทบทวน',
+        effect: 'ช่วยเพิ่มค่า Memory หลังทำ Quiz ได้ดี',
+        howToGet: 'ทำ Quiz ได้คะแนนดี'
+    },
+    'Deep Focus': {
+        id: 'deep-focus',
+        name: 'Deep Focus',
+        icon: '🔮',
+        type: 'Focus',
+        rarity: 'Rare',
+        description: 'เข้าสู่โหมดอ่านจริงจัง',
+        lore: 'ทุกสิ่งรอบตัวจางหาย เหลือเพียงเป้าหมาย',
+        effect: 'เพิ่มโอกาสได้รับ Focus Bonus เมื่ออ่านนาน',
+        howToGet: 'อ่านต่อเนื่องนานกว่า 45 นาที'
+    },
+    'Knowledge Blade': {
+        id: 'knowledge-blade',
+        name: 'Knowledge Blade',
+        icon: '⚔️',
+        type: 'Mastery',
+        rarity: 'Rare',
+        description: 'ความเข้าใจเฉียบคมขึ้น',
+        lore: 'ความรู้ถูกลับให้คมเหมือนใบมีด',
+        effect: 'ช่วยเพิ่ม Understanding และ Accuracy',
+        howToGet: 'ทำ Quiz ได้มากกว่า 90%'
+    },
+    'Review Shield': {
+        id: 'review-shield',
+        name: 'Review Shield',
+        icon: '🛡️',
+        type: 'Recovery',
+        rarity: 'Rare',
+        description: 'ป้องกันการลืมด้วยการทบทวน',
+        lore: 'การทบทวนคือโล่ที่ป้องกันความรู้ไม่ให้สลาย',
+        effect: 'ช่วยเพิ่ม Mastery เมื่อทบทวนเควสเดิม',
+        howToGet: 'ทำเควสสำเร็จ 5 ครั้งขึ้นไป'
+    }
+};
+
+/**
  * สร้างผู้ใช้ Test
  */
 function debugCreateTestPlayer() {
@@ -754,6 +887,237 @@ function debugCreateTestPlayer() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeStorage();
 });
+
+// ========================================
+// SKILL CARD DATABASE & MODAL FUNCTIONS
+// ========================================
+
+/**
+ * ข้อมูล Skill Card Database ทั้งหมด
+ */
+const SKILL_CARD_DATABASE = {
+    'Concentration Boost': {
+        name: 'Concentration Boost',
+        type: 'Focus',
+        rarity: 'Common',
+        icon: '🎯',
+        description: 'พลังสมาธิเพิ่มขึ้นจากการอ่านต่อเนื่อง',
+        lore: 'สมาธิเริ่มไหลรวมเป็นพลัง',
+        effect: 'ช่วยเพิ่มค่า Focus จากเควสที่อ่านครบเวลา',
+        howToGet: 'อ่านครบเวลาเป้าหมาย'
+    },
+    'Memory Spark': {
+        name: 'Memory Spark',
+        type: 'Memory',
+        rarity: 'Common',
+        icon: '✨',
+        description: 'ความจำเริ่มทำงานดีขึ้น',
+        lore: 'ประกายความจำถูกจุดขึ้นจากการทบทวน',
+        effect: 'ช่วยเพิ่มค่า Memory หลังทำ Quiz ได้ดี',
+        howToGet: 'ทำ Quiz ได้คะแนนดี'
+    },
+    'Deep Focus': {
+        name: 'Deep Focus',
+        type: 'Focus',
+        rarity: 'Rare',
+        icon: '🌀',
+        description: 'เข้าสู่โหมดอ่านจริงจัง',
+        lore: 'ทุกสิ่งรอบตัวจางหาย เหลือเพียงเป้าหมาย',
+        effect: 'เพิ่มโอกาสได้รับ Focus Bonus เมื่ออ่านนาน',
+        howToGet: 'อ่านต่อเนื่องนานกว่า 45 นาที'
+    },
+    'Knowledge Blade': {
+        name: 'Knowledge Blade',
+        type: 'Mastery',
+        rarity: 'Rare',
+        icon: '⚔️',
+        description: 'ความเข้าใจเฉียบคมขึ้น',
+        lore: 'ความรู้ถูกลับให้คมเหมือนใบมีด',
+        effect: 'ช่วยเพิ่ม Understanding และ Accuracy',
+        howToGet: 'ทำ Quiz ได้มากกว่า 80%'
+    },
+    'Review Shield': {
+        name: 'Review Shield',
+        type: 'Recovery',
+        rarity: 'Rare',
+        icon: '🛡️',
+        description: 'ป้องกันการลืมด้วยการทบทวน',
+        lore: 'การทบทวนคือโล่ที่ป้องกันความรู้ไม่ให้สลาย',
+        effect: 'ช่วยเพิ่ม Mastery เมื่อทบทวนเควสเดิม',
+        howToGet: 'ทำเควสเดิมซ้ำหรือทบทวนบทเดิม'
+    },
+    'Mastery Core': {
+        name: 'Mastery Core',
+        type: 'Mastery',
+        rarity: 'Epic',
+        icon: '💎',
+        description: 'เข้าใจบทเรียนในระดับสูง',
+        lore: 'แกนกลางความชำนาญเริ่มก่อตัว',
+        effect: 'เพิ่ม Mastery มากขึ้นเมื่อคะแนนสูง',
+        howToGet: 'ทำคะแนน Quiz สูงกว่า 90%'
+    },
+    'Discipline Aura': {
+        name: 'Discipline Aura',
+        type: 'Discipline',
+        rarity: 'Epic',
+        icon: '⚡',
+        description: 'ออร่าวินัยจากการอ่านสม่ำเสมอ',
+        lore: 'วินัยที่สั่งสม เริ่มเปล่งประกายออกมา',
+        effect: 'เพิ่ม EXP Bonus เมื่อมี Streak ต่อเนื่อง',
+        howToGet: 'อ่านต่อเนื่องหลายวัน'
+    },
+    'Limit Break': {
+        name: 'Limit Break',
+        type: 'Power',
+        rarity: 'Legendary',
+        icon: '🔥',
+        description: 'ทะลุขีดจำกัดของตัวเอง',
+        lore: 'ขีดจำกัดเดิมถูกทำลายด้วยความพยายาม',
+        effect: 'เพิ่ม EXP Bonus พิเศษเมื่ออ่านเกินเป้าหมายมาก',
+        howToGet: 'อ่านเกินเป้าหมาย 2 เท่า หรือทำ Boss Quest สำเร็จ'
+    }
+};
+
+/**
+ * ได้รับข้อมูลรายละเอียด Skill Card โดยชื่อ
+ * @param {string} skillName - ชื่อ Skill Card
+ * @returns {object} ข้อมูล Skill Card หรือ null ถ้าไม่พบ
+ */
+function getSkillCardDetails(skillName) {
+    return SKILL_CARD_DATABASE[skillName] || null;
+}
+
+/**
+ * ได้รับรายการ Skill Card ทั้งหมดที่อยู่ในฐานข้อมูล
+ * @returns {array} ชื่อ Skill Card ทั้งหมด
+ */
+function getAllSkillCardNames() {
+    return Object.keys(SKILL_CARD_DATABASE);
+}
+
+/**
+ * เปิด Skill Card Modal พร้อมข้อมูลรายละเอียด
+ * @param {string} skillName - ชื่อ Skill Card
+ * @param {string} acquiredDate - วันที่ได้รับ (optional)
+ */
+function openSkillCardModal(skillName, acquiredDate = '') {
+    const skillData = getSkillCardDetails(skillName);
+    
+    if (!skillData) {
+        console.error('Skill Card not found:', skillName);
+        return;
+    }
+
+    // ตัวกำหนด Rarity Color
+    const rarityColors = {
+        'Common': 'rarity-common',
+        'Rare': 'rarity-rare',
+        'Epic': 'rarity-epic',
+        'Legendary': 'rarity-legendary'
+    };
+
+    const rarityClass = rarityColors[skillData.rarity] || 'rarity-common';
+
+    const modalContent = `
+        <div class="skill-card-modal ${rarityClass}">
+            <div class="skill-modal-header">
+                <div class="skill-modal-icon">${skillData.icon}</div>
+                <div class="skill-modal-title">
+                    <h2>${skillData.name}</h2>
+                    <div class="skill-modal-type">${skillData.type}</div>
+                </div>
+            </div>
+
+            <div class="skill-modal-rarity">
+                <span class="rarity-badge">${skillData.rarity}</span>
+            </div>
+
+            <div class="skill-modal-section">
+                <div class="section-label">Description</div>
+                <div class="section-content">${skillData.description}</div>
+            </div>
+
+            <div class="skill-modal-section">
+                <div class="section-label">Lore</div>
+                <div class="section-content lore-text">"${skillData.lore}"</div>
+            </div>
+
+            <div class="skill-modal-section">
+                <div class="section-label">Effect</div>
+                <div class="section-content">${skillData.effect}</div>
+            </div>
+
+            <div class="skill-modal-section">
+                <div class="section-label">How to Get</div>
+                <div class="section-content">${skillData.howToGet}</div>
+            </div>
+
+            ${acquiredDate ? `
+                <div class="skill-modal-section">
+                    <div class="section-label">Acquired Date</div>
+                    <div class="section-content">${acquiredDate}</div>
+                </div>
+            ` : ''}
+
+            <button class="skill-modal-close-btn" onclick="closeSkillCardModal()">
+                <span>CLOSE</span>
+            </button>
+        </div>
+    `;
+
+    const modalElement = document.getElementById('detailModal');
+    const modalContentElement = document.getElementById('modalContent');
+    
+    if (modalElement && modalContentElement) {
+        modalContentElement.innerHTML = modalContent;
+        modalElement.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Add glitch animation
+        const skillCardModal = modalElement.querySelector('.skill-card-modal');
+        if (skillCardModal) {
+            skillCardModal.classList.add('glitch-entry');
+        }
+    }
+}
+
+/**
+ * ปิด Skill Card Modal
+ */
+function closeSkillCardModal() {
+    const modalElement = document.getElementById('detailModal');
+    
+    if (modalElement) {
+        modalElement.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        
+        setTimeout(() => {
+            const modalContentElement = document.getElementById('modalContent');
+            if (modalContentElement) {
+                modalContentElement.innerHTML = '';
+            }
+        }, 300);
+    }
+}
+
+/**
+ * ตั้งค่า Modal Event Listeners
+ */
+function setupSkillCardModalListeners() {
+    const modalElement = document.getElementById('detailModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+    
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeSkillCardModal);
+    }
+    
+    // ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalElement && modalElement.classList.contains('active')) {
+            closeSkillCardModal();
+        }
+    });
+}
 
 // ========================================
 // NOTES FOR DEVELOPERS

@@ -100,15 +100,46 @@ function displaySkillsPanel(player) {
         });
     }
     
+    // Display Skill Cards
     if (player.skillCards && player.skillCards.length > 0) {
         html += `<hr style="border-color: rgba(0,229,255,0.2); margin: 15px 0;">
-        <div><strong>Skills Unlocked:</strong></div>`;
-        player.skillCards.forEach(skill => {
-            html += `<div class="skill-badge" style="background: rgba(0, 102, 255, 0.15); border-color: rgba(0, 102, 255, 0.3);">${skill.icon || '⚔️'} ${skill.name}</div>`;
+        <div><strong>Skills Unlocked:</strong></div>
+        <div class="skill-cards-grid">`;
+        
+        player.skillCards.forEach(skillName => {
+            const skillData = getSkillCardDetails(skillName);
+            if (skillData) {
+                const rarityClass = getRarityClass(skillData.rarity);
+                html += `
+                    <div class="skill-card-item ${rarityClass}" onclick="openSkillCardModal('${skillName}')">
+                        <div class="skill-card-icon">${skillData.icon}</div>
+                        <div class="skill-card-name">${skillName}</div>
+                        <div class="skill-card-type">${skillData.type}</div>
+                    </div>`;
+            }
         });
+        
+        html += `</div>`;
+    } else {
+        // No Skill Cards message
+        html += `<hr style="border-color: rgba(0,229,255,0.2); margin: 15px 0;">
+        <div class="no-skills-message">
+            <div class="message-title">No Skill Card Acquired Yet</div>
+            <div class="message-subtitle">Complete quests to obtain your first skill card.</div>
+        </div>`;
     }
     
     skillsContainer.innerHTML = html;
+}
+
+function getRarityClass(rarity) {
+    const rarityMap = {
+        'Common': 'card-common',
+        'Rare': 'card-rare',
+        'Epic': 'card-epic',
+        'Legendary': 'card-legendary'
+    };
+    return rarityMap[rarity] || 'card-common';
 }
 
 function getReadingTimeByDifficulty(difficulty) {
@@ -272,4 +303,7 @@ function setupEventListeners() {
         localStorage.removeItem('currentPlayer');
         window.location.href = 'index.html';
     });
+
+    // Setup Skill Card Modal Listeners
+    setupSkillCardModalListeners();
 }

@@ -4296,3 +4296,889 @@ a:hover {
         font-size: 0.8rem;
     }
 }
+
+/* ========================================
+   DETAIL MODAL - Badge/Skill Information
+   ======================================== */
+
+.detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.detail-modal.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 14, 31, 0.95);
+    backdrop-filter: blur(5px);
+    z-index: 1;
+    cursor: pointer;
+}
+
+.modal-content {
+    position: relative;
+    z-index: 2;
+    background: rgba(10, 14, 31, 0.9);
+    border: 3px solid;
+    border-radius: 0;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 
+        0 0 60px rgba(0, 229, 255, 0.3),
+        inset 0 0 40px rgba(0, 229, 255, 0.08);
+    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-content.badge-detail {
+    border-color: var(--neon-cyan);
+}
+
+.modal-content.skill-detail {
+    border-color: var(--neon-purple);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid currentColor;
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.modal-icon {
+    font-size: 2.5rem;
+}
+
+.modal-name {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.modal-close {
+    background: none;
+    border: 2px solid currentColor;
+    color: currentColor;
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: currentColor;
+    color: var(--dark-black);
+    transform: rotate(90deg);
+}
+
+.badge-detail .modal-close {
+    color: var(--neon-cyan);
+}
+
+.skill-detail .modal-close {
+    color: var(--neon-purple);
+}
+
+.modal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.section-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.section-content {
+    font-size: 1rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.rarity-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 2px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid;
+    width: fit-content;
+}
+
+.rarity-common {
+    background: rgba(0, 229, 255, 0.2);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+
+.rarity-rare {
+    background: rgba(0, 102, 255, 0.2);
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+}
+
+.rarity-epic {
+    background: rgba(217, 70, 239, 0.2);
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+}
+
+.rarity-legendary {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
+    color: #FFD700;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(0, 255, 153, 0.15);
+    border-left: 3px solid var(--neon-green);
+    border-radius: 2px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--neon-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor 50%, transparent);
+    opacity: 0.5;
+    margin: 10px 0;
+}
+
+.modal-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* Scrollbar Styling */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--neon-cyan);
+    border-radius: 4px;
+}
+
+.modal-content.skill-detail::-webkit-scrollbar-thumb {
+    background: var(--neon-purple);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-green);
+}
+
+/* Mobile Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 30px;
+        max-width: 95%;
+    }
+    
+    .modal-icon {
+        font-size: 2rem;
+    }
+    
+    .modal-name {
+        font-size: 1.4rem;
+    }
+    
+    .section-label {
+        font-size: 0.75rem;
+    }
+    
+    .section-content {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 20px;
+        max-width: 98%;
+        max-height: 95vh;
+    }
+    
+    .modal-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .modal-title {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-icon {
+        font-size: 1.8rem;
+    }
+    
+    .modal-name {
+        font-size: 1.2rem;
+    }
+    
+    .modal-close {
+        align-self: flex-end;
+    }
+    
+    .section-label {
+        font-size: 0.7rem;
+    }
+    
+    .section-content {
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================
+   SKILL CARD GRID & MODAL SYSTEM
+   ======================================== */
+
+/* Skill Cards Grid */
+.skill-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.skill-card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    background: rgba(10, 14, 31, 0.4);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+    min-height: 110px;
+}
+
+.skill-card-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 229, 255, 0.03) 2px,
+        rgba(0, 229, 255, 0.03) 4px
+    );
+    pointer-events: none;
+}
+
+.skill-card-item:hover {
+    transform: translateY(-5px);
+    background: rgba(10, 14, 31, 0.6);
+    border-color: rgba(0, 229, 255, 0.6);
+}
+
+/* Rarity Card Colors */
+.skill-card-item.card-common {
+    border-color: rgba(0, 153, 255, 0.4);
+    background: rgba(0, 153, 255, 0.08);
+}
+
+.skill-card-item.card-common:hover {
+    border-color: rgba(0, 153, 255, 0.7);
+    background: rgba(0, 153, 255, 0.15);
+    box-shadow: 0 0 15px rgba(0, 153, 255, 0.3);
+}
+
+.skill-card-item.card-rare {
+    border-color: rgba(217, 70, 239, 0.4);
+    background: rgba(217, 70, 239, 0.08);
+}
+
+.skill-card-item.card-rare:hover {
+    border-color: rgba(217, 70, 239, 0.7);
+    background: rgba(217, 70, 239, 0.15);
+    box-shadow: 0 0 15px rgba(217, 70, 239, 0.3);
+}
+
+.skill-card-item.card-epic {
+    border-color: rgba(0, 204, 255, 0.4);
+    background: rgba(0, 204, 255, 0.08);
+}
+
+.skill-card-item.card-epic:hover {
+    border-color: rgba(0, 204, 255, 0.7);
+    background: rgba(0, 204, 255, 0.15);
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.3);
+}
+
+.skill-card-item.card-legendary {
+    border-color: rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.skill-card-item.card-legendary:hover {
+    border-color: rgba(255, 215, 0, 0.7);
+    background: rgba(255, 215, 0, 0.15);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.skill-card-icon {
+    font-size: 2rem;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+.skill-card-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    position: relative;
+    z-index: 2;
+    line-height: 1.2;
+}
+
+.skill-card-type {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 2;
+}
+
+/* No Skills Message */
+.no-skills-message {
+    text-align: center;
+    padding: 20px 15px;
+    color: var(--text-dim);
+    border: 1px dashed rgba(0, 229, 255, 0.2);
+    border-radius: 2px;
+    margin-top: 12px;
+}
+
+.message-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+}
+
+.message-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+/* ========================================
+   SKILL CARD MODAL - HOLOGRAM WINDOW
+   ======================================== */
+
+/* Modal Container */
+.detail-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+.detail-modal.active {
+    display: flex;
+    opacity: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 40%, rgba(217, 70, 239, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(0, 102, 255, 0.1) 0%, transparent 50%);
+    backdrop-filter: blur(8px);
+    z-index: 1;
+    animation: overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Modal Content */
+#modalContent {
+    position: relative;
+    z-index: 2;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Skill Card Modal Styles */
+.skill-card-modal {
+    background: rgba(10, 14, 31, 0.85);
+    backdrop-filter: blur(15px);
+    border: 2px solid;
+    border-radius: 2px;
+    padding: 35px;
+    box-shadow: 
+        0 0 50px rgba(0, 229, 255, 0.2),
+        0 0 100px rgba(217, 70, 239, 0.15),
+        inset 0 0 40px rgba(0, 229, 255, 0.05);
+    position: relative;
+    animation: skillModalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.skill-card-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 229, 255, 0.02) 2px,
+        rgba(0, 229, 255, 0.02) 4px
+    );
+    pointer-events: none;
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.skill-card-modal::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Rarity Border Colors */
+.skill-card-modal.rarity-common {
+    border-color: rgba(0, 153, 255, 0.6);
+    box-shadow: 
+        0 0 50px rgba(0, 153, 255, 0.2),
+        0 0 100px rgba(0, 153, 255, 0.1),
+        inset 0 0 40px rgba(0, 153, 255, 0.05);
+}
+
+.skill-card-modal.rarity-common::after {
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.6) 0%, rgba(0, 204, 255, 0.3) 100%);
+    opacity: 0.1;
+}
+
+.skill-card-modal.rarity-rare {
+    border-color: rgba(217, 70, 239, 0.6);
+    box-shadow: 
+        0 0 50px rgba(217, 70, 239, 0.2),
+        0 0 100px rgba(217, 70, 239, 0.1),
+        inset 0 0 40px rgba(217, 70, 239, 0.05);
+}
+
+.skill-card-modal.rarity-rare::after {
+    background: linear-gradient(135deg, rgba(217, 70, 239, 0.6) 0%, rgba(255, 0, 102, 0.3) 100%);
+    opacity: 0.1;
+}
+
+.skill-card-modal.rarity-epic {
+    border-color: rgba(0, 204, 255, 0.6);
+    box-shadow: 
+        0 0 50px rgba(0, 204, 255, 0.25),
+        0 0 100px rgba(0, 204, 255, 0.15),
+        inset 0 0 40px rgba(0, 204, 255, 0.08);
+}
+
+.skill-card-modal.rarity-epic::after {
+    background: linear-gradient(135deg, rgba(0, 204, 255, 0.6) 0%, rgba(102, 51, 255, 0.3) 100%);
+    opacity: 0.1;
+}
+
+.skill-card-modal.rarity-legendary {
+    border-color: rgba(255, 215, 0, 0.7);
+    box-shadow: 
+        0 0 60px rgba(255, 215, 0, 0.3),
+        0 0 120px rgba(0, 204, 255, 0.15),
+        inset 0 0 50px rgba(255, 215, 0, 0.1);
+}
+
+.skill-card-modal.rarity-legendary::after {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.7) 0%, rgba(0, 204, 255, 0.4) 100%);
+    opacity: 0.15;
+}
+
+/* Glitch Entry Animation */
+.skill-card-modal.glitch-entry {
+    animation: skillModalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+               glitchEntry 0.5s ease-out;
+}
+
+@keyframes skillModalSlideIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes glitchEntry {
+    0% {
+        clip-path: polygon(0 0, 100% 0, 100% 45%, 0 60%, 0 100%, 100% 100%, 100% 45%, 0 0);
+    }
+    20% {
+        clip-path: polygon(0 0, 100% 0, 100% 30%, 0 70%, 0 100%, 100% 100%, 100% 50%, 0 0);
+    }
+    40% {
+        clip-path: polygon(0 0, 100% 0, 100% 60%, 0 40%, 0 100%, 100% 100%, 100% 30%, 0 0);
+    }
+    60% {
+        clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%, 0 100%, 100% 100%, 100% 40%, 0 0);
+    }
+    100% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+}
+
+/* Modal Header */
+.skill-modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+.skill-modal-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.3));
+}
+
+.skill-modal-title {
+    flex: 1;
+}
+
+.skill-modal-title h2 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.skill-modal-type {
+    font-size: 0.9rem;
+    color: var(--neon-blue);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Rarity Badge */
+.skill-modal-rarity {
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+.rarity-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: rgba(0, 229, 255, 0.1);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    box-shadow: var(--glow-cyan);
+}
+
+.skill-card-modal.rarity-common .rarity-badge {
+    background: rgba(0, 153, 255, 0.15);
+    border-color: rgba(0, 153, 255, 0.7);
+    color: rgba(0, 153, 255, 0.9);
+    box-shadow: 0 0 15px rgba(0, 153, 255, 0.3);
+}
+
+.skill-card-modal.rarity-rare .rarity-badge {
+    background: rgba(217, 70, 239, 0.15);
+    border-color: rgba(217, 70, 239, 0.7);
+    color: rgba(217, 70, 239, 0.9);
+    box-shadow: 0 0 15px rgba(217, 70, 239, 0.3);
+}
+
+.skill-card-modal.rarity-epic .rarity-badge {
+    background: rgba(0, 204, 255, 0.15);
+    border-color: rgba(0, 204, 255, 0.7);
+    color: rgba(0, 204, 255, 0.9);
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.4);
+}
+
+.skill-card-modal.rarity-legendary .rarity-badge {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.8);
+    color: rgba(255, 215, 0, 0.95);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Modal Sections */
+.skill-modal-section {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+    position: relative;
+    z-index: 2;
+}
+
+.skill-modal-section:last-of-type {
+    border-bottom: none;
+}
+
+.section-label {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.section-content {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.lore-text {
+    font-style: italic;
+    color: var(--neon-purple);
+    text-shadow: 0 0 10px rgba(217, 70, 239, 0.2);
+    font-size: 0.9rem;
+}
+
+/* Close Button */
+.skill-modal-close-btn {
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(217, 70, 239, 0.1) 100%);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 2px;
+    color: var(--neon-cyan);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.skill-modal-close-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.skill-modal-close-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(217, 70, 239, 0.2) 100%);
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 
+        0 0 20px rgba(0, 229, 255, 0.3),
+        0 0 30px rgba(217, 70, 239, 0.2);
+}
+
+.skill-modal-close-btn:hover::before {
+    transform: translateX(100%);
+}
+
+/* Modal Scrollbar Styling */
+#modalContent::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modalContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#modalContent::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--neon-cyan), var(--neon-purple));
+    border-radius: 3px;
+}
+
+#modalContent::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--neon-purple), var(--neon-cyan));
+}
+
+/* Modal Responsive */
+@media (max-width: 768px) {
+    .skill-card-modal {
+        padding: 25px;
+        max-width: 95%;
+    }
+    
+    .skill-modal-header {
+        gap: 12px;
+    }
+    
+    .skill-modal-icon {
+        font-size: 2.5rem;
+    }
+    
+    .skill-modal-title h2 {
+        font-size: 1.3rem;
+    }
+    
+    .skill-modal-type {
+        font-size: 0.8rem;
+    }
+    
+    .section-label {
+        font-size: 0.75rem;
+    }
+    
+    .section-content {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .skill-card-modal {
+        padding: 18px;
+        max-height: 95vh;
+    }
+    
+    .skill-modal-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .skill-modal-icon {
+        font-size: 2rem;
+    }
+    
+    .skill-modal-title h2 {
+        font-size: 1.2rem;
+    }
+    
+    .section-label {
+        font-size: 0.7rem;
+    }
+    
+    .section-content {
+        font-size: 0.85rem;
+    }
+    
+    .skill-modal-close-btn {
+        padding: 10px 15px;
+        font-size: 0.75rem;
+    }
+}
