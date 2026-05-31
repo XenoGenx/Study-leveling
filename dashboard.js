@@ -4,9 +4,51 @@
    ======================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadDashboard();
-    setupEventListeners();
+    // Start booting sequence
+    bootSequence();
 });
+
+function bootSequence() {
+    // Stage 1: SYSTEM BOOTING
+    setTimeout(() => {
+        document.getElementById('bootLine2').style.display = 'block';
+    }, 800);
+    
+    // Stage 2: PLAYER DATA LOADED
+    setTimeout(() => {
+        document.getElementById('bootLine3').style.display = 'block';
+    }, 1600);
+    
+    // Stage 3: Load dashboard and hide overlay
+    setTimeout(() => {
+        loadDashboard();
+        setupEventListeners();
+        hideBootOverlay();
+    }, 2400);
+}
+
+function hideBootOverlay() {
+    const overlay = document.getElementById('bootOverlay');
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        // Trigger panel animations
+        animatePanels();
+    }, 500);
+}
+
+function animatePanels() {
+    const panelLeft = document.getElementById('panelLeft');
+    const panelCenter = document.getElementById('panelCenter');
+    const panelRight = document.getElementById('panelRight');
+    
+    // Add animation classes
+    panelLeft.classList.add('panel-slide-left');
+    panelCenter.classList.add('panel-slide-center');
+    panelRight.classList.add('panel-slide-right');
+}
 
 function loadDashboard() {
     const currentPlayer = localStorage.getItem('currentPlayer');
@@ -23,7 +65,7 @@ function loadDashboard() {
         return;
     }
     
-    // Update header
+    // Update player name
     document.getElementById('welcomeName').textContent = player.name;
     
     // Render all panels
@@ -67,7 +109,7 @@ function displayQuestForm(player) {
     let html = `
         <div class="form-group">
             <label class="form-label">Hunt Name</label>
-            <input type="text" id="questName" class="form-input" placeholder="Enter quest name..." maxlength="50">
+            <input type="text" id="questName" class="form-input" placeholder="Create your hunt name..." maxlength="50">
         </div>
         
         <div class="form-group">
@@ -84,7 +126,7 @@ function displayQuestForm(player) {
         </div>
         
         <div class="form-group">
-            <label class="form-label">Difficulty</label>
+            <label class="form-label">Difficulty Level</label>
             <select id="questDifficulty" class="form-select">
                 <option value="easy">Easy (1.0x EXP)</option>
                 <option value="normal">Normal (1.5x EXP)</option>
@@ -94,10 +136,31 @@ function displayQuestForm(player) {
         </div>
         
         <button id="startQuestBtn" class="btn-quest-start">ACCEPT QUEST</button>
+        <button id="focusModeBtn" class="btn-focus-mode">START FOCUS MODE</button>
     `;
     
     questFormContainer.innerHTML = html;
     document.getElementById('startQuestBtn').addEventListener('click', handleQuestStart);
+    document.getElementById('focusModeBtn').addEventListener('click', handleFocusMode);
+}
+
+function handleFocusMode() {
+    const questName = document.getElementById('questName').value.trim();
+    const questTime = parseInt(document.getElementById('questTime').value);
+    
+    if (!questName) {
+        alert('⚠️ Enter quest name!');
+        return;
+    }
+    
+    // Similar to quest start but maybe for a different mode
+    sessionStorage.setItem('currentQuest', JSON.stringify({
+        questName,
+        questTime,
+        questDifficulty: 'normal'
+    }));
+    
+    window.location.href = 'timer.html';
 }
 
 function handleQuestStart() {

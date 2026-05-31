@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dashboard-page">
+    <!-- PORTAL BACKGROUND -->
+    <div class="portal-background">
+        <div class="portal-glow portal-glow-1"></div>
+        <div class="portal-glow portal-glow-2"></div>
+    </div>
+
+    <!-- PARTICLE SYSTEM -->
     <div class="particle-container">
         <div class="particle purple"></div>
         <div class="particle cyan"></div>
@@ -19,50 +26,93 @@
         <div class="particle blue"></div>
     </div>
 
-    <div class="system-header">
-        <div class="header-title">
-            <span class="neon-cyan">SYSTEM INTERFACE</span>
-        </div>
-        <div class="header-welcome">
-            <span class="neon-purple">Welcome, </span>
-            <span class="neon-cyan" id="welcomeName">Hunter</span>
-        </div>
-        <div class="logout-area">
-            <button id="logoutBtn" class="logout-button neon-purple">LOGOUT</button>
+    <!-- SCAN LINES OVERLAY -->
+    <div class="scan-lines"></div>
+
+    <!-- SYSTEM BOOTING SEQUENCE -->
+    <div class="system-boot-overlay" id="bootOverlay">
+        <div class="boot-message">
+            <div class="boot-line" id="bootLine1">▸ SYSTEM BOOTING...</div>
+            <div class="boot-line" id="bootLine2" style="display:none;">▸ PLAYER DATA LOADED</div>
+            <div class="boot-line" id="bootLine3" style="display:none;">▸ QUEST ACCESS GRANTED</div>
+            <div class="boot-cursor"></div>
         </div>
     </div>
 
-    <div class="dashboard-panels">
-        <div class="panel-left hologram-panel">
+    <!-- SYSTEM INTERFACE HEADER -->
+    <div class="dashboard-header">
+        <div class="header-label">QUEST SYSTEM - ACTIVE</div>
+        <div class="header-controls">
+            <button id="logoutBtn" class="btn-logout">
+                <span class="btn-text">RETURN TO GATE</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN 3-PANEL DASHBOARD -->
+    <div class="dashboard-container">
+        <!-- PANEL LEFT: SKILLS & BADGES -->
+        <div class="dashboard-panel panel-left" id="panelLeft">
             <div class="panel-header">
-                <h2 class="neon-purple">SKILLS</h2>
+                <div class="header-bracket">[</div>
+                <h2 class="header-title">ACHIEVEMENTS</h2>
+                <div class="header-bracket">]</div>
             </div>
+            
             <div class="panel-content">
                 <div id="skillsContainer" class="skills-container">
-                    <!-- Skills will be injected here by dashboard.js -->
+                    <!-- Loaded by dashboard.js -->
                 </div>
+            </div>
+            
+            <div class="panel-footer">
+                <div class="corner-accent corner-tl"></div>
+                <div class="corner-accent corner-br"></div>
             </div>
         </div>
 
-        <div class="panel-center hologram-panel">
+        <!-- PANEL CENTER: QUEST CONTROL (MAIN) -->
+        <div class="dashboard-panel panel-center" id="panelCenter">
             <div class="panel-header">
-                <h2 class="neon-cyan">QUEST CONTROL</h2>
+                <div class="header-bracket">[</div>
+                <h2 class="header-title">QUEST DISPATCH</h2>
+                <div class="header-bracket">]</div>
             </div>
+            
             <div class="panel-content">
-                <div id="questFormContainer" class="quest-form-container">
-                    <!-- Quest form will be injected here by dashboard.js -->
+                <div id="playerNameDisplay" class="player-display">
+                    <span class="name-label">ACTIVE HUNTER:</span>
+                    <span class="name-value" id="welcomeName">Loading...</span>
                 </div>
+                
+                <div id="questFormContainer" class="quest-form-container">
+                    <!-- Loaded by dashboard.js -->
+                </div>
+            </div>
+            
+            <div class="panel-footer">
+                <div class="corner-accent corner-tl"></div>
+                <div class="corner-accent corner-br"></div>
             </div>
         </div>
 
-        <div class="panel-right hologram-panel">
+        <!-- PANEL RIGHT: STATUS & STATS -->
+        <div class="dashboard-panel panel-right" id="panelRight">
             <div class="panel-header">
-                <h2 class="neon-cyan">STATUS</h2>
+                <div class="header-bracket">[</div>
+                <h2 class="header-title">PLAYER STATUS</h2>
+                <div class="header-bracket">]</div>
             </div>
+            
             <div class="panel-content">
                 <div id="statusContainer" class="status-container">
-                    <!-- Status display will be injected here by dashboard.js -->
+                    <!-- Loaded by dashboard.js -->
                 </div>
+            </div>
+            
+            <div class="panel-footer">
+                <div class="corner-accent corner-tl"></div>
+                <div class="corner-accent corner-br"></div>
             </div>
         </div>
     </div>
