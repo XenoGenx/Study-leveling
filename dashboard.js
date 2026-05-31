@@ -100,6 +100,14 @@ function displaySkillsPanel(player) {
         });
     }
     
+    if (player.skillCards && player.skillCards.length > 0) {
+        html += `<hr style="border-color: rgba(0,229,255,0.2); margin: 15px 0;">
+        <div><strong>Skills Unlocked:</strong></div>`;
+        player.skillCards.forEach(skill => {
+            html += `<div class="skill-badge" style="background: rgba(0, 102, 255, 0.15); border-color: rgba(0, 102, 255, 0.3);">${skill.icon || '⚔️'} ${skill.name}</div>`;
+        });
+    }
+    
     skillsContainer.innerHTML = html;
 }
 
