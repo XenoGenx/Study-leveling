@@ -1365,6 +1365,20 @@ a:hover {
     color: var(--text-primary);
 }
 
+.reading-time-display {
+    background: rgba(0, 229, 255, 0.1);
+    border: 2px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 12px 15px;
+    border-radius: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
 /* ========================================
    SKILLS CONTAINER - LEFT PANEL
    ======================================== */

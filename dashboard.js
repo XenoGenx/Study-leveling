@@ -103,6 +103,16 @@ function displaySkillsPanel(player) {
     skillsContainer.innerHTML = html;
 }
 
+function getReadingTimeByDifficulty(difficulty) {
+    const timeMap = {
+        'easy': 10,
+        'normal': 20,
+        'hard': 30,
+        'boss': 45
+    };
+    return timeMap[difficulty] || 20;
+}
+
 function displayQuestForm(player) {
     const questFormContainer = document.getElementById('questFormContainer');
     
@@ -113,26 +123,18 @@ function displayQuestForm(player) {
         </div>
         
         <div class="form-group">
-            <label class="form-label">Reading Time (min)</label>
-            <select id="questTime" class="form-select">
-                <option value="10">10 min</option>
-                <option value="15">15 min</option>
-                <option value="20">20 min</option>
-                <option value="25">25 min</option>
-                <option value="30">30 min</option>
-                <option value="45">45 min</option>
-                <option value="60">60 min</option>
+            <label class="form-label">Difficulty Level</label>
+            <select id="questDifficulty" class="form-select">
+                <option value="easy">Easy - 10 min</option>
+                <option value="normal" selected>Normal - 20 min</option>
+                <option value="hard">Hard - 30 min</option>
+                <option value="boss">Boss - 45 min</option>
             </select>
         </div>
         
         <div class="form-group">
-            <label class="form-label">Difficulty Level</label>
-            <select id="questDifficulty" class="form-select">
-                <option value="easy">Easy (1.0x EXP)</option>
-                <option value="normal">Normal (1.5x EXP)</option>
-                <option value="hard">Hard (2.0x EXP)</option>
-                <option value="boss">Boss (3.0x EXP)</option>
-            </select>
+            <label class="form-label">Reading Time</label>
+            <div id="readingTimeDisplay" class="reading-time-display">20 min</div>
         </div>
         
         <button id="startQuestBtn" class="btn-quest-start">ACCEPT QUEST</button>
@@ -140,24 +142,35 @@ function displayQuestForm(player) {
     `;
     
     questFormContainer.innerHTML = html;
+    
+    // Add event listener for difficulty changes
+    const difficultySelect = document.getElementById('questDifficulty');
+    const readingTimeDisplay = document.getElementById('readingTimeDisplay');
+    
+    difficultySelect.addEventListener('change', (e) => {
+        const time = getReadingTimeByDifficulty(e.target.value);
+        readingTimeDisplay.textContent = time + ' min';
+    });
+    
     document.getElementById('startQuestBtn').addEventListener('click', handleQuestStart);
     document.getElementById('focusModeBtn').addEventListener('click', handleFocusMode);
 }
 
 function handleFocusMode() {
     const questName = document.getElementById('questName').value.trim();
-    const questTime = parseInt(document.getElementById('questTime').value);
+    const questDifficulty = document.getElementById('questDifficulty').value;
+    const questTime = getReadingTimeByDifficulty(questDifficulty);
     
     if (!questName) {
         alert('⚠️ Enter quest name!');
         return;
     }
     
-    // Similar to quest start but maybe for a different mode
+    // Store in sessionStorage with calculated time based on difficulty
     sessionStorage.setItem('currentQuest', JSON.stringify({
         questName,
         questTime,
-        questDifficulty: 'normal'
+        questDifficulty
     }));
     
     window.location.href = 'timer.html';
@@ -165,15 +178,15 @@ function handleFocusMode() {
 
 function handleQuestStart() {
     const questName = document.getElementById('questName').value.trim();
-    const questTime = parseInt(document.getElementById('questTime').value);
     const questDifficulty = document.getElementById('questDifficulty').value;
+    const questTime = getReadingTimeByDifficulty(questDifficulty);
     
     if (!questName) {
         alert('⚠️ Enter quest name!');
         return;
     }
     
-    // Store in sessionStorage
+    // Store in sessionStorage with calculated time based on difficulty
     sessionStorage.setItem('currentQuest', JSON.stringify({
         questName,
         questTime,
