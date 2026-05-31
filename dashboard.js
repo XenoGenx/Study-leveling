@@ -106,11 +106,11 @@ function displaySkillsPanel(player) {
 function getReadingTimeByDifficulty(difficulty) {
     const timeMap = {
         'easy': 10,
-        'normal': 20,
-        'hard': 30,
-        'boss': 45
+        'normal': 30,
+        'hard': 60,
+        'boss': 120
     };
-    return timeMap[difficulty] || 20;
+    return timeMap[difficulty] || 30;
 }
 
 function displayQuestForm(player) {
@@ -126,15 +126,15 @@ function displayQuestForm(player) {
             <label class="form-label">Difficulty Level</label>
             <select id="questDifficulty" class="form-select">
                 <option value="easy">Easy - 10 min</option>
-                <option value="normal" selected>Normal - 20 min</option>
-                <option value="hard">Hard - 30 min</option>
-                <option value="boss">Boss - 45 min</option>
+                <option value="normal" selected>Normal - 30 min</option>
+                <option value="hard">Hard - 1 hour</option>
+                <option value="boss">Boss - 2 hours</option>
             </select>
         </div>
         
         <div class="form-group">
             <label class="form-label">Reading Time</label>
-            <div id="readingTimeDisplay" class="reading-time-display">20 min</div>
+            <div id="readingTimeDisplay" class="reading-time-display">30 min</div>
         </div>
         
         <button id="startQuestBtn" class="btn-quest-start">ACCEPT QUEST</button>
