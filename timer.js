@@ -122,27 +122,33 @@ function initializeTimer() {
 
 function setupTimerControls() {
     // Setup Start button
-    if (startBtn) {
-        startBtn.addEventListener('click', (e) => {
+    const startBtnElement = document.getElementById('startBtn');
+    if (startBtnElement) {
+        startBtnElement.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            console.log('Start button clicked');
             startTimer();
             updateControlsVisibility();
         });
     }
     
     // Setup Pause button
-    if (pauseBtn) {
-        pauseBtn.addEventListener('click', togglePause);
+    const pauseBtnElement = document.getElementById('pauseBtn');
+    if (pauseBtnElement) {
+        pauseBtnElement.addEventListener('click', togglePause);
     }
     
     // Setup Resume button
-    if (resumeBtn) {
-        resumeBtn.addEventListener('click', toggleResume);
+    const resumeBtnElement = document.getElementById('resumeBtn');
+    if (resumeBtnElement) {
+        resumeBtnElement.addEventListener('click', toggleResume);
     }
     
     // Setup Finish button
-    if (finishBtn) {
-        finishBtn.addEventListener('click', finishQuest);
+    const finishBtnElement = document.getElementById('finishBtn');
+    if (finishBtnElement) {
+        finishBtnElement.addEventListener('click', finishQuest);
     }
     
     // Update initial button visibility
