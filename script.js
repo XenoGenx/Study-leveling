@@ -1,5 +1,5 @@
 /* ========================================
-   STUDY GATE SYSTEM - MAIN SCRIPT
+   STUDY LEVELING - MAIN SCRIPT
    Shared functions and utilities
    ======================================== */
 

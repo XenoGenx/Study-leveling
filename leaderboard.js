@@ -1,5 +1,5 @@
 /* ========================================
-   STUDY GATE SYSTEM - LEADERBOARD
+   STUDY LEVELING - LEADERBOARD
    Hunter Ranking & Leaderboard System
    ======================================== */
 
