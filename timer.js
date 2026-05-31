@@ -1,6 +1,6 @@
 /* ========================================
-   TIMER - HOLOGRAM FOCUS MODE
-   Boot sequence + 3-panel layout + motivational messages
+   TIMER - HOLOGRAM FOCUS MODE - OPTIMIZED
+   Boot sequence + performance optimized countdown
    ======================================== */
 
 let timerInterval = null;
@@ -10,6 +10,20 @@ let isRunning = false;
 let isPaused = false;
 let currentQuestData = {};
 let messageUpdateTimer = null;
+let lastUpdateTime = 0;
+
+// Cache DOM elements for performance
+let timerDisplay = null;
+let sessionDisplay = null;
+let progressDisplay = null;
+let pauseBtn = null;
+let resumeBtn = null;
+let finishBtn = null;
+let startBtn = null;
+let focusStabilityBar = null;
+let sessionProgressBar = null;
+let mainContainer = null;
+let messageBox = null;
 
 // Motivational messages for focus
 const motivationalMessages = [
@@ -37,10 +51,25 @@ function startBootSequence() {
         if (bootOverlay) {
             bootOverlay.classList.add('hidden');
         }
+        cacheElements();
         initializeTimer();
         setupTimerControls();
         startMotivationalMessages();
     }, 2400);
+}
+
+function cacheElements() {
+    timerDisplay = document.getElementById('timerTimeDisplay');
+    sessionDisplay = document.getElementById('sessionTimeDisplay');
+    progressDisplay = document.getElementById('progressPercentageDisplay');
+    pauseBtn = document.getElementById('pauseBtn');
+    resumeBtn = document.getElementById('resumeBtn');
+    finishBtn = document.getElementById('finishBtn');
+    startBtn = document.getElementById('startBtn');
+    focusStabilityBar = document.getElementById('focusStabilityBar');
+    sessionProgressBar = document.getElementById('sessionProgressBar');
+    mainContainer = document.querySelector('.timer-container-wrapper');
+    messageBox = document.getElementById('systemMessageBox');
 }
 
 function initializeTimer() {
@@ -92,11 +121,6 @@ function initializeTimer() {
 }
 
 function setupTimerControls() {
-    const pauseBtn = document.getElementById('pauseBtn');
-    const resumeBtn = document.getElementById('resumeBtn');
-    const finishBtn = document.getElementById('finishBtn');
-    const startBtn = document.getElementById('startBtn');
-    
     // Setup Start button
     if (startBtn) {
         startBtn.addEventListener('click', (e) => {
@@ -128,73 +152,41 @@ function setupTimerControls() {
 }
 
 function updateTimerDisplay() {
+    // Format time only once
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     
-    const timerElement = document.getElementById('timerTimeDisplay');
-    if (timerElement) {
-        timerElement.textContent = display;
-        
-        // Color transitions based on time
-        if (timeRemaining > 60) {
-            timerElement.classList.remove('time-warning', 'time-complete');
-        } else if (timeRemaining > 0 && timeRemaining <= 60) {
-            timerElement.classList.add('time-warning');
-            timerElement.classList.remove('time-complete');
-        } else if (timeRemaining === 0) {
-            timerElement.classList.add('time-complete');
-            timerElement.classList.remove('time-warning');
-        }
+    // Batch DOM updates - all at once
+    if (timerDisplay) {
+        timerDisplay.textContent = display;
     }
     
-    // Update progress percentage
-    const percentage = Math.round(((totalTime - timeRemaining) / totalTime) * 100);
-    const progressEl = document.getElementById('progressPercentageDisplay');
-    if (progressEl) {
-        progressEl.textContent = percentage + '% Complete';
+    // Update progress percentage only when needed (every few updates)
+    if (progressDisplay) {
+        const percentage = Math.round(((totalTime - timeRemaining) / totalTime) * 100);
+        progressDisplay.textContent = percentage + '% Complete';
     }
-}
-
-function updateSessionInfo() {
-    const totalTimeMin = Math.floor(totalTime / 60);
-    const elapsedTimeMin = Math.floor((totalTime - timeRemaining) / 60);
-    const elapsedTimeSec = (totalTime - timeRemaining) % 60;
     
-    const display = `${String(elapsedTimeMin).padStart(2, '0')}:${String(elapsedTimeSec).padStart(2, '0')} / ${String(totalTimeMin).padStart(2, '0')}:00`;
-    
-    const sessionDisplay = document.getElementById('sessionTimeDisplay');
+    // Update session info
     if (sessionDisplay) {
-        sessionDisplay.textContent = display;
+        const totalTimeMin = Math.floor(totalTime / 60);
+        const elapsedTimeMin = Math.floor((totalTime - timeRemaining) / 60);
+        const elapsedTimeSec = (totalTime - timeRemaining) % 60;
+        const sessionDisplay_text = `${String(elapsedTimeMin).padStart(2, '0')}:${String(elapsedTimeSec).padStart(2, '0')} / ${String(totalTimeMin).padStart(2, '0')}:00`;
+        sessionDisplay.textContent = sessionDisplay_text;
     }
-}
-
-function updateProgressBars() {
-    // Session progress bar
+    
+    // Update progress bars only once per update
     const progress = ((totalTime - timeRemaining) / totalTime) * 100;
-    const progressBar = document.getElementById('sessionProgressBar');
-    const progressValue = document.getElementById('sessionProgressValue');
-    if (progressBar) progressBar.style.width = progress + '%';
-    if (progressValue) progressValue.textContent = Math.round(progress) + '%';
+    if (sessionProgressBar) {
+        sessionProgressBar.style.width = Math.round(progress) + '%';
+    }
     
-    // Focus stability (stays high if not paused)
+    // Update focus stability based on pause state
     const focusStability = isPaused ? 70 : 100;
-    const focusBar = document.getElementById('focusStabilityBar');
-    const focusValue = document.getElementById('focusStabilityValue');
-    if (focusBar) focusBar.style.width = focusStability + '%';
-    if (focusValue) focusValue.textContent = focusStability + '%';
-}
-
-function updateRewardEstimate() {
-    // Rough reward estimate based on difficulty
-    const difficulty = currentQuestData.questDifficulty || 'normal';
-    const difficultyMultiplier = { 'easy': 1, 'normal': 1.5, 'hard': 2, 'boss': 3 }[difficulty] || 1.5;
-    const baseReward = 50;
-    const estimatedReward = Math.round(baseReward * difficultyMultiplier);
-    
-    const rewardValue = document.getElementById('rewardValue');
-    if (rewardValue) {
-        rewardValue.textContent = estimatedReward + ' EXP';
+    if (focusStabilityBar) {
+        focusStabilityBar.style.width = focusStability + '%';
     }
 }
 
@@ -203,55 +195,60 @@ function startTimer() {
     
     isRunning = true;
     isPaused = false;
+    lastUpdateTime = Date.now();
     
     updateControlsVisibility();
     showSystemMessage('SYSTEM ACTIVATED');
     
     console.log('🟢 Timer started');
     
-    timerInterval = setInterval(() => {
-        if (!isPaused) {
-            timeRemaining--;
-            updateTimerDisplay();
-            updateSessionInfo();
-            updateProgressBars();
-            
-            // Play warning sound at 60s
-            if (timeRemaining === 60) {
-                playWarningSound();
-                showSystemMessage('⚠️ ONE MINUTE REMAINING');
+    // Use requestAnimationFrame for smooth updates
+    function tick() {
+        if (!isRunning) return;
+        
+        const now = Date.now();
+        const elapsed = now - lastUpdateTime;
+        
+        if (elapsed >= 990) { // Update every ~1 second to avoid jitter
+            if (!isPaused) {
+                timeRemaining--;
+                
+                // Batch all DOM updates in one call
+                updateTimerDisplay();
+                
+                // Play warning sound at 60s
+                if (timeRemaining === 60) {
+                    playWarningSound();
+                    showSystemMessage('⚠️ ONE MINUTE REMAINING');
+                }
+                
+                // Auto complete at 0
+                if (timeRemaining <= 0) {
+                    finishTimerAutomatically();
+                    return;
+                }
             }
-            
-            // Auto complete at 0
-            if (timeRemaining <= 0) {
-                finishTimerAutomatically();
-            }
+            lastUpdateTime = now;
         }
-    }, 1000);
+        
+        timerInterval = requestAnimationFrame(tick);
+    }
+    
+    timerInterval = requestAnimationFrame(tick);
 }
 
 function togglePause() {
     if (!isRunning) return;
     
     isPaused = true;
-    // Don't clear interval - let it check isPaused flag
     
     updateControlsVisibility();
     showSystemMessage('SYSTEM PAUSED');
+    updateTimerDisplay(); // Update display immediately
     
-    // Show paused indicator
-    const pausedIndicator = document.getElementById('pausedIndicator');
-    if (pausedIndicator) {
-        pausedIndicator.style.opacity = '1';
-        setTimeout(() => {
-            pausedIndicator.style.opacity = '0';
-        }, 2000);
-    }
-    
-    // Dim the main container
-    const mainContainer = document.querySelector('.timer-main-container');
+    // Use CSS class instead of inline styles for better performance
     if (mainContainer) {
-        mainContainer.style.opacity = '0.7';
+        mainContainer.classList.add('paused-state');
     }
     
     console.log('⏸️ Timer paused');
@@ -264,23 +261,17 @@ function toggleResume() {
     
     updateControlsVisibility();
     showSystemMessage('SYSTEM REACTIVATED');
+    updateTimerDisplay(); // Update display immediately
     
-    // Restore opacity
-    const mainContainer = document.querySelector('.timer-main-container');
+    // Remove pause state
     if (mainContainer) {
-        mainContainer.style.opacity = '1';
+        mainContainer.classList.remove('paused-state');
     }
     
     console.log('▶️ Timer resumed');
-    // Timer continues because isPaused is now false - interval will check it
 }
 
 function updateControlsVisibility() {
-    const pauseBtn = document.getElementById('pauseBtn');
-    const resumeBtn = document.getElementById('resumeBtn');
-    const finishBtn = document.getElementById('finishBtn');
-    const startBtn = document.getElementById('startBtn');
-    
     if (isRunning && !isPaused) {
         // Timer running: show PAUSE and FINISH, hide RESUME and START
         if (pauseBtn) pauseBtn.classList.remove('hidden');
@@ -303,7 +294,9 @@ function updateControlsVisibility() {
 }
 
 function finishQuest() {
-    clearInterval(timerInterval);
+    if (timerInterval) {
+        cancelAnimationFrame(timerInterval);
+    }
     isRunning = false;
     
     const actualReadingTime = Math.round((totalTime - timeRemaining) / 60);
@@ -319,7 +312,9 @@ function finishQuest() {
 }
 
 function finishTimerAutomatically() {
-    clearInterval(timerInterval);
+    if (timerInterval) {
+        cancelAnimationFrame(timerInterval);
+    }
     isRunning = false;
     
     sessionStorage.setItem('readingTime', Math.round(totalTime / 60));
@@ -335,13 +330,12 @@ function finishTimerAutomatically() {
 }
 
 function showSystemMessage(message) {
-    const messageBox = document.getElementById('systemMessageBox');
     if (messageBox) {
         messageBox.textContent = '> ' + message;
-        messageBox.style.animation = 'none';
-        setTimeout(() => {
-            messageBox.style.animation = 'slideInRight 0.5s ease-out';
-        }, 10);
+        messageBox.classList.remove('pulse-message');
+        // Trigger reflow to restart animation
+        void messageBox.offsetWidth;
+        messageBox.classList.add('pulse-message');
     }
 }
 
