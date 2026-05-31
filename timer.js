@@ -114,8 +114,17 @@ function initializeTimer() {
     timeRemaining = totalTime;
     
     updateTimerDisplay();
-    updateSessionInfo();
-    updateRewardEstimate();
+    
+    // Calculate reward estimate
+    const difficulty = currentQuest.questDifficulty || 'normal';
+    const difficultyMultiplier = { 'easy': 1, 'normal': 1.5, 'hard': 2, 'boss': 3 }[difficulty] || 1.5;
+    const baseReward = 50;
+    const estimatedReward = Math.round(baseReward * difficultyMultiplier);
+    
+    const rewardValue = document.getElementById('rewardValue');
+    if (rewardValue) {
+        rewardValue.textContent = estimatedReward + ' EXP';
+    }
     
     console.log(`⏱️ Quest: ${currentQuest.questName} (${currentQuest.questTime}min)`);
 }
