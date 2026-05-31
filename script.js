@@ -640,28 +640,31 @@ function checkSkillUnlock(player, quizScore) {
     const newSkills = [];
     const existingSkills = player.skillCards || [];
     
+    // Get existing skill names (handle both string and object formats)
+    const existingSkillNames = existingSkills.map(s => typeof s === 'string' ? s : s.name);
+    
     // Concentration Boost - Score 70%
-    if (quizScore >= 70 && !existingSkills.includes('Concentration Boost')) {
+    if (quizScore >= 70 && !existingSkillNames.includes('Concentration Boost')) {
         newSkills.push({ id: 'concentration', name: 'Concentration Boost', icon: '🧠' });
     }
     
     // Memory Spark - Score 80%
-    if (quizScore >= 80 && !existingSkills.includes('Memory Spark')) {
+    if (quizScore >= 80 && !existingSkillNames.includes('Memory Spark')) {
         newSkills.push({ id: 'memory', name: 'Memory Spark', icon: '⚡' });
     }
     
     // Deep Focus - Score 85%
-    if (quizScore >= 85 && !existingSkills.includes('Deep Focus')) {
+    if (quizScore >= 85 && !existingSkillNames.includes('Deep Focus')) {
         newSkills.push({ id: 'deep-focus', name: 'Deep Focus', icon: '🔮' });
     }
     
     // Knowledge Blade - Score 90%
-    if (quizScore >= 90 && !existingSkills.includes('Knowledge Blade')) {
+    if (quizScore >= 90 && !existingSkillNames.includes('Knowledge Blade')) {
         newSkills.push({ id: 'knowledge-blade', name: 'Knowledge Blade', icon: '⚔️' });
     }
     
     // Review Shield - 5 เควสสำเร็จ
-    if (player.questsCompleted >= 5 && !existingSkills.includes('Review Shield')) {
+    if (player.questsCompleted >= 5 && !existingSkillNames.includes('Review Shield')) {
         newSkills.push({ id: 'review-shield', name: 'Review Shield', icon: '🛡️' });
     }
     

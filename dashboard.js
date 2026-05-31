@@ -106,13 +106,16 @@ function displaySkillsPanel(player) {
         <div><strong>Skills Unlocked:</strong></div>
         <div class="skill-cards-grid">`;
         
-        player.skillCards.forEach(skillName => {
+        player.skillCards.forEach(skillObj => {
+            // Handle both string and object formats
+            const skillName = typeof skillObj === 'string' ? skillObj : skillObj.name;
             const skillData = getSkillCardDetails(skillName);
             if (skillData) {
                 const rarityClass = getRarityClass(skillData.rarity);
+                const displayIcon = typeof skillObj === 'object' ? (skillObj.icon || skillData.icon) : skillData.icon;
                 html += `
-                    <div class="skill-card-item ${rarityClass}" onclick="openSkillCardModal('${skillName}')">
-                        <div class="skill-card-icon">${skillData.icon}</div>
+                    <div class="skill-card-item ${rarityClass}" onclick="openSkillCardModal('${skillName}')" style="cursor: pointer;">
+                        <div class="skill-card-icon">${displayIcon}</div>
                         <div class="skill-card-name">${skillName}</div>
                         <div class="skill-card-type">${skillData.type}</div>
                     </div>`;
