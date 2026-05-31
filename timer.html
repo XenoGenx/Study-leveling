@@ -7,72 +7,180 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="timer-page">
+    <!-- TIMER BOOT SEQUENCE -->
+    <div class="timer-boot-overlay" id="timerBootOverlay">
+        <div class="timer-boot-message">SYSTEM LINKING...</div>
+        <div class="timer-boot-message">QUEST DATA LOADED</div>
+        <div class="timer-boot-message">FOCUS MODE ACTIVATED</div>
+    </div>
+
     <!-- PORTAL BACKGROUND -->
     <div class="portal-background">
         <div class="portal-glow portal-glow-1"></div>
         <div class="portal-glow portal-glow-2"></div>
     </div>
 
-    <!-- PARTICLE SYSTEM -->
-    <div class="particle-container">
-        <div class="particle purple"></div>
-        <div class="particle cyan"></div>
-        <div class="particle blue"></div>
-        <div class="particle purple"></div>
-        <div class="particle cyan"></div>
-        <div class="particle blue"></div>
-        <div class="particle purple"></div>
-        <div class="particle cyan"></div>
-        <div class="particle blue"></div>
-    </div>
-
     <!-- SCAN LINES OVERLAY -->
     <div class="scan-lines"></div>
 
-    <!-- TIMER CONTAINER -->
-    <div class="timer-container">
-        <!-- Quest Progress Panel -->
-        <div class="quest-progress-panel">
-            <!-- QUEST HEADER -->
-            <div class="quest-header">
-                <div class="quest-status">
+    <!-- TIMER WRAPPER -->
+    <div class="timer-wrapper">
+        <!-- TIMER HEADER -->
+        <div class="timer-header">
+            <div class="timer-header-left">
+                <div class="quest-status-label">
                     QUEST IN PROGRESS
                 </div>
-                <div class="quest-name" id="questName">
-                    Loading Quest...
-                </div>
-            </div>
-
-            <!-- TIMER RING -->
-            <div class="timer-ring-container">
-                <div class="timer-ring">
-                    <div class="timer-display">
-                        <span class="timer-time">00:00</span>
+                <div class="hunter-info">
+                    <div class="hunter-name-display" id="hunterNameDisplay">Hunter</div>
+                    <div class="hunter-rank-level">
+                        <div class="rank-badge">
+                            <span>Rank:</span>
+                            <span class="rank-badge-value" id="hunterRankDisplay">E</span>
+                        </div>
+                        <div class="level-badge">
+                            <span>Level:</span>
+                            <span class="level-badge-value" id="hunterLevelDisplay">1</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- TIMER CONTROLS -->
-            <div class="timer-controls">
-                <button class="btn-timer btn-start" id="startBtn">
-                    <span class="btn-label">START READING</span>
-                </button>
-                <button class="btn-timer btn-pause" id="pauseResumeBtn" style="display: none;">
-                    <span class="btn-label" id="pauseLabel">PAUSE</span>
-                </button>
-                <button class="btn-timer btn-finish" id="finishBtn" style="display: none;">
-                    <span class="btn-label">FINISH QUEST</span>
-                </button>
-            </div>
-
-            <!-- TIMER INFO -->
-            <div class="timer-info">
-                <span class="info-label">Focus on your reading. Every second counts!</span>
+            <div class="focus-mode-indicator">
+                <span class="focus-indicator-dot"></span>
+                <span>FOCUS MODE ACTIVE</span>
             </div>
         </div>
+
+        <!-- MAIN TIMER CONTAINER -->
+        <div class="timer-main-container">
+            <!-- LEFT PANEL: QUEST OBJECTIVE -->
+            <div class="timer-panel timer-panel-left">
+                <div class="timer-panel-header">
+                    <span class="panel-header-bracket">[</span>
+                    <span>QUEST OBJECTIVE</span>
+                    <span class="panel-header-bracket">]</span>
+                </div>
+                
+                <div class="objective-item">
+                    <div class="objective-label">📖 Target</div>
+                    <div class="objective-value">Read until timer ends</div>
+                </div>
+                
+                <div class="objective-item">
+                    <div class="objective-label">⏱️ Session Time</div>
+                    <div class="objective-value" id="sessionTimeDisplay">00:00 / 00:00</div>
+                </div>
+                
+                <div class="objective-item">
+                    <div class="objective-label">⚠️ Warning</div>
+                    <div class="objective-value">Do not break focus</div>
+                </div>
+                
+                <div class="objective-item">
+                    <div class="objective-label">💡 Tip</div>
+                    <div class="objective-value">Minimize distractions for optimal focus</div>
+                </div>
+            </div>
+
+            <!-- CENTER PANEL: QUEST TIMER CORE -->
+            <div class="timer-panel timer-panel-center scanline">
+                <div class="timer-core-display">
+                    <!-- Circular Timer Ring -->
+                    <div class="timer-ring-wrapper">
+                        <div class="timer-circular-progress">
+                            <div class="timer-display-content">
+                                <span class="timer-time-display" id="timerTimeDisplay">00:00</span>
+                                <div class="timer-time-label">QUEST TIMER CORE</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quest Information -->
+                    <div class="quest-name-display" id="questNameDisplay">Quest Name</div>
+                    <div class="difficulty-badge" id="difficultyBadgeDisplay">Easy</div>
+                    <div class="progress-percentage" id="progressPercentageDisplay">0% Complete</div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: FOCUS STATUS -->
+            <div class="timer-panel timer-panel-right">
+                <div class="timer-panel-header">
+                    <span class="panel-header-bracket">[</span>
+                    <span>FOCUS STATUS</span>
+                    <span class="panel-header-bracket">]</span>
+                </div>
+                
+                <div class="status-bar-item">
+                    <div class="status-bar-label">
+                        <span>🎯 Focus Stability</span>
+                        <span class="status-bar-value" id="focusStabilityValue">100%</span>
+                    </div>
+                    <div class="status-bar-bg">
+                        <div class="status-bar-fill" id="focusStabilityBar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="status-bar-item">
+                    <div class="status-bar-label">
+                        <span>📊 Session Progress</span>
+                        <span class="status-bar-value" id="sessionProgressValue">0%</span>
+                    </div>
+                    <div class="status-bar-bg">
+                        <div class="status-bar-fill" id="sessionProgressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <div class="status-bar-item">
+                    <div class="status-bar-label">
+                        <span>🔥 Streak</span>
+                        <span class="status-bar-value" id="streakValue">0</span>
+                    </div>
+                    <div class="status-bar-bg">
+                        <div class="status-bar-fill" id="streakBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <div class="status-bar-item">
+                    <div class="status-bar-label">
+                        <span>🏆 Estimated Reward</span>
+                        <span class="status-bar-value" id="rewardValue">0 EXP</span>
+                    </div>
+                    <div class="status-bar-bg">
+                        <div class="status-bar-fill" id="rewardBar" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SYSTEM MESSAGE BOX -->
+        <div class="system-message-box" id="systemMessageBox">
+            > SYSTEM READY
+        </div>
+
+        <!-- TIMER CONTROLS -->
+        <div class="timer-controls-section">
+            <button class="timer-btn btn-pause-timer" id="pauseBtn">
+                PAUSE
+            </button>
+            <button class="timer-btn btn-finish-timer prominent" id="finishBtn">
+                FINISH QUEST
+            </button>
+            <button class="timer-btn btn-resume-timer" id="resumeBtn">
+                RESUME
+            </button>
+        </div>
     </div>
+
+    <!-- QUEST SAVE OVERLAY -->
+    <div class="quest-save-overlay" id="questSaveOverlay">
+        <div class="save-message">QUEST DATA SAVED</div>
+    </div>
+
+    <!-- PAUSED INDICATOR -->
+    <div class="paused-indicator" id="pausedIndicator">SYSTEM PAUSED</div>
 
     <script src="script.js"></script>
     <script src="timer.js"></script>
 </body>
 </html>
+

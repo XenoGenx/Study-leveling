@@ -1,6 +1,6 @@
 /* ========================================
-   TIMER - QUEST IN PROGRESS
-   Countdown timer with pause/resume
+   TIMER - HOLOGRAM FOCUS MODE
+   Boot sequence + 3-panel layout + motivational messages
    ======================================== */
 
 let timerInterval = null;
@@ -8,47 +8,118 @@ let timeRemaining = 0;
 let totalTime = 0;
 let isRunning = false;
 let isPaused = false;
+let currentQuestData = {};
+let messageUpdateTimer = null;
+
+// Motivational messages for focus
+const motivationalMessages = [
+    '> Stay focused, Hunter.',
+    '> Your concentration is rising.',
+    '> Every minute strengthens discipline.',
+    '> Do not let the quest fail.',
+    '> Knowledge is being accumulated.',
+    '> Focus stability increased.',
+    '> System monitoring: All optimal.',
+    '> Warrior of knowledge detected.',
+    '> Persistence breeds mastery.',
+    '> The path to wisdom continues...',
+];
 
 document.addEventListener('DOMContentLoaded', () => {
-    initializeTimer();
-    setupTimerControls();
+    startBootSequence();
 });
+
+function startBootSequence() {
+    const bootOverlay = document.getElementById('timerBootOverlay');
+    
+    // Boot sequence timing: 2.4 seconds total (same as dashboard)
+    setTimeout(() => {
+        if (bootOverlay) {
+            bootOverlay.classList.add('hidden');
+        }
+        initializeTimer();
+        setupTimerControls();
+        startMotivationalMessages();
+    }, 2400);
+}
 
 function initializeTimer() {
     const currentQuest = JSON.parse(sessionStorage.getItem('currentQuest')) || {};
+    const currentPlayer = localStorage.getItem('currentPlayer');
     
-    if (!currentQuest.questName) {
+    if (!currentQuest.questName || !currentPlayer) {
         window.location.href = 'dashboard.html';
         return;
     }
     
-    // Set quest info
-    const questNameEl = document.getElementById('questName');
-    if (questNameEl) questNameEl.textContent = currentQuest.questName;
+    // Store quest data
+    currentQuestData = currentQuest;
+    
+    // Get player data
+    const players = JSON.parse(localStorage.getItem('players')) || {};
+    const player = players[currentPlayer];
+    
+    // Display player info
+    if (document.getElementById('hunterNameDisplay')) {
+        document.getElementById('hunterNameDisplay').textContent = currentPlayer;
+    }
+    if (document.getElementById('hunterRankDisplay')) {
+        document.getElementById('hunterRankDisplay').textContent = player.rank || 'E';
+    }
+    if (document.getElementById('hunterLevelDisplay')) {
+        document.getElementById('hunterLevelDisplay').textContent = player.level || 1;
+    }
+    
+    // Display quest info in center panel
+    if (document.getElementById('questNameDisplay')) {
+        document.getElementById('questNameDisplay').textContent = currentQuest.questName;
+    }
+    if (document.getElementById('difficultyBadgeDisplay')) {
+        const difficulty = currentQuest.questDifficulty || 'normal';
+        document.getElementById('difficultyBadgeDisplay').textContent = 
+            difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+    }
     
     // Convert minutes to seconds
     totalTime = currentQuest.questTime * 60;
     timeRemaining = totalTime;
     
     updateTimerDisplay();
+    updateSessionInfo();
+    updateRewardEstimate();
+    
     console.log(`⏱️ Quest: ${currentQuest.questName} (${currentQuest.questTime}min)`);
 }
 
 function setupTimerControls() {
-    const startBtn = document.getElementById('startBtn');
-    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
     const finishBtn = document.getElementById('finishBtn');
     
-    if (startBtn) {
-        startBtn.addEventListener('click', startTimer);
-    }
-    
-    if (pauseResumeBtn) {
-        pauseResumeBtn.addEventListener('click', togglePause);
-    }
+    // First button: START (we'll add click handler in updateControlsVisibility)
+    // Actually, let's make the first action auto-start or wait for user
+    // For now, let's make finish button auto-start on first click
     
     if (finishBtn) {
-        finishBtn.addEventListener('click', finishQuest);
+        finishBtn.textContent = 'START QUEST';
+        finishBtn.classList.remove('prominent');
+        finishBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                startTimer();
+            } else {
+                finishQuest();
+            }
+        });
+    }
+    
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', togglePause);
+        pauseBtn.style.display = 'none';
+    }
+    
+    if (resumeBtn) {
+        resumeBtn.addEventListener('click', toggleResume);
+        resumeBtn.style.display = 'none';
     }
     
     console.log('✅ Timer controls setup complete');
@@ -59,18 +130,69 @@ function updateTimerDisplay() {
     const seconds = timeRemaining % 60;
     const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     
-    const timerElement = document.querySelector('.timer-time');
+    const timerElement = document.getElementById('timerTimeDisplay');
     if (timerElement) {
         timerElement.textContent = display;
         
-        // Change color when <60s
-        if (timeRemaining < 60 && timeRemaining > 0) {
-            timerElement.style.color = 'var(--neon-pink)';
-            timerElement.style.textShadow = '0 0 20px rgba(255, 0, 102, 0.6)';
-        } else if (timeRemaining >= 60) {
-            timerElement.style.color = 'var(--neon-cyan)';
-            timerElement.style.textShadow = 'var(--glow-cyan)';
+        // Color transitions based on time
+        if (timeRemaining > 60) {
+            timerElement.classList.remove('time-warning', 'time-complete');
+        } else if (timeRemaining > 0 && timeRemaining <= 60) {
+            timerElement.classList.add('time-warning');
+            timerElement.classList.remove('time-complete');
+        } else if (timeRemaining === 0) {
+            timerElement.classList.add('time-complete');
+            timerElement.classList.remove('time-warning');
         }
+    }
+    
+    // Update progress percentage
+    const percentage = Math.round(((totalTime - timeRemaining) / totalTime) * 100);
+    const progressEl = document.getElementById('progressPercentageDisplay');
+    if (progressEl) {
+        progressEl.textContent = percentage + '% Complete';
+    }
+}
+
+function updateSessionInfo() {
+    const totalTimeMin = Math.floor(totalTime / 60);
+    const elapsedTimeMin = Math.floor((totalTime - timeRemaining) / 60);
+    const elapsedTimeSec = (totalTime - timeRemaining) % 60;
+    
+    const display = `${String(elapsedTimeMin).padStart(2, '0')}:${String(elapsedTimeSec).padStart(2, '0')} / ${String(totalTimeMin).padStart(2, '0')}:00`;
+    
+    const sessionDisplay = document.getElementById('sessionTimeDisplay');
+    if (sessionDisplay) {
+        sessionDisplay.textContent = display;
+    }
+}
+
+function updateProgressBars() {
+    // Session progress bar
+    const progress = ((totalTime - timeRemaining) / totalTime) * 100;
+    const progressBar = document.getElementById('sessionProgressBar');
+    const progressValue = document.getElementById('sessionProgressValue');
+    if (progressBar) progressBar.style.width = progress + '%';
+    if (progressValue) progressValue.textContent = Math.round(progress) + '%';
+    
+    // Focus stability (stays high if not paused)
+    const focusStability = isPaused ? 70 : 100;
+    const focusBar = document.getElementById('focusStabilityBar');
+    const focusValue = document.getElementById('focusStabilityValue');
+    if (focusBar) focusBar.style.width = focusStability + '%';
+    if (focusValue) focusValue.textContent = focusStability + '%';
+}
+
+function updateRewardEstimate() {
+    // Rough reward estimate based on difficulty
+    const difficulty = currentQuestData.questDifficulty || 'normal';
+    const difficultyMultiplier = { 'easy': 1, 'normal': 1.5, 'hard': 2, 'boss': 3 }[difficulty] || 1.5;
+    const baseReward = 50;
+    const estimatedReward = Math.round(baseReward * difficultyMultiplier);
+    
+    const rewardValue = document.getElementById('rewardValue');
+    if (rewardValue) {
+        rewardValue.textContent = estimatedReward + ' EXP';
     }
 }
 
@@ -80,14 +202,8 @@ function startTimer() {
     isRunning = true;
     isPaused = false;
     
-    // Show pause and finish buttons immediately
-    const startBtn = document.getElementById('startBtn');
-    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
-    const finishBtn = document.getElementById('finishBtn');
-    
-    if (startBtn) startBtn.style.display = 'none';
-    if (pauseResumeBtn) pauseResumeBtn.style.display = 'block';
-    if (finishBtn) finishBtn.style.display = 'block';
+    updateControlsVisibility();
+    showSystemMessage('SYSTEM ACTIVATED');
     
     console.log('🟢 Timer started');
     
@@ -95,10 +211,13 @@ function startTimer() {
         if (!isPaused) {
             timeRemaining--;
             updateTimerDisplay();
+            updateSessionInfo();
+            updateProgressBars();
             
             // Play warning sound at 60s
             if (timeRemaining === 60) {
                 playWarningSound();
+                showSystemMessage('⚠️ ONE MINUTE REMAINING');
             }
             
             // Auto complete at 0
@@ -109,67 +228,154 @@ function startTimer() {
     }, 1000);
 }
 
-function updateTimerButtons() {
-    const startBtn = document.getElementById('startBtn');
-    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
-    const finishBtn = document.getElementById('finishBtn');
-    const pauseLabel = document.getElementById('pauseLabel');
-    
-    if (isRunning) {
-        // Hide start, show pause/resume and finish
-        if (startBtn) startBtn.style.display = 'none';
-        if (pauseResumeBtn) pauseResumeBtn.style.display = 'block';
-        if (finishBtn) finishBtn.style.display = 'block';
-    } else if (!isRunning) {
-        // Show start, hide pause/resume and finish
-        if (startBtn) startBtn.style.display = 'block';
-        if (pauseResumeBtn) pauseResumeBtn.style.display = 'none';
-        if (finishBtn) finishBtn.style.display = 'none';
-    }
-    
-    // Update pause/resume label
-    if (pauseLabel) {
-        pauseLabel.textContent = isPaused ? 'RESUME' : 'PAUSE';
-    }
-}
-
 function togglePause() {
     if (!isRunning) return;
     
-    isPaused = !isPaused;
-    console.log(isPaused ? '⏸️ Timer paused' : '▶️ Timer resumed');
-    updateTimerButtons();
+    isPaused = true;
+    clearInterval(timerInterval);
+    
+    updateControlsVisibility();
+    showSystemMessage('SYSTEM PAUSED');
+    
+    // Show paused indicator
+    const pausedIndicator = document.getElementById('pausedIndicator');
+    if (pausedIndicator) {
+        pausedIndicator.style.opacity = '1';
+        setTimeout(() => {
+            pausedIndicator.style.opacity = '0';
+        }, 2000);
+    }
+    
+    // Dim the main container
+    const mainContainer = document.querySelector('.timer-main-container');
+    if (mainContainer) {
+        mainContainer.style.opacity = '0.7';
+    }
+    
+    console.log('⏸️ Timer paused');
+}
+
+function toggleResume() {
+    if (!isPaused || !isRunning) return;
+    
+    isPaused = false;
+    
+    updateControlsVisibility();
+    showSystemMessage('SYSTEM REACTIVATED');
+    
+    // Restore opacity
+    const mainContainer = document.querySelector('.timer-main-container');
+    if (mainContainer) {
+        mainContainer.style.opacity = '1';
+    }
+    
+    console.log('▶️ Timer resumed');
+    
+    // Resume the timer
+    timerInterval = setInterval(() => {
+        if (!isPaused) {
+            timeRemaining--;
+            updateTimerDisplay();
+            updateSessionInfo();
+            updateProgressBars();
+            
+            if (timeRemaining === 60) {
+                playWarningSound();
+                showSystemMessage('⚠️ ONE MINUTE REMAINING');
+            }
+            
+            if (timeRemaining <= 0) {
+                finishTimerAutomatically();
+            }
+        }
+    }, 1000);
+}
+
+function updateControlsVisibility() {
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const finishBtn = document.getElementById('finishBtn');
+    
+    if (isRunning && !isPaused) {
+        if (pauseBtn) pauseBtn.style.display = 'block';
+        if (resumeBtn) resumeBtn.style.display = 'none';
+        if (finishBtn) finishBtn.classList.add('prominent');
+    } else if (isRunning && isPaused) {
+        if (pauseBtn) pauseBtn.style.display = 'none';
+        if (resumeBtn) resumeBtn.style.display = 'block';
+        if (finishBtn) finishBtn.classList.remove('prominent');
+    } else {
+        if (pauseBtn) pauseBtn.style.display = 'none';
+        if (resumeBtn) resumeBtn.style.display = 'none';
+        if (finishBtn) {
+            finishBtn.textContent = 'START QUEST';
+            finishBtn.style.display = 'block';
+        }
+    }
 }
 
 function finishQuest() {
     clearInterval(timerInterval);
-    const actualReadingTime = Math.round((totalTime - timeRemaining) / 60);
+    isRunning = false;
     
+    const actualReadingTime = Math.round((totalTime - timeRemaining) / 60);
     sessionStorage.setItem('readingTime', actualReadingTime);
+    
+    showQuestSaveOverlay();
+    
     console.log(`✅ Quest finished! Reading time: ${actualReadingTime} min`);
     
-    window.location.href = 'quiz.html';
+    setTimeout(() => {
+        window.location.href = 'quiz.html';
+    }, 2000);
 }
 
 function finishTimerAutomatically() {
     clearInterval(timerInterval);
     isRunning = false;
+    
     sessionStorage.setItem('readingTime', Math.round(totalTime / 60));
+    
+    showSystemMessage('TIME\'S UP - EXCELLENT FOCUS');
+    showQuestSaveOverlay();
     
     console.log('⏱️ Time\'s up! Auto-completing quest...');
     
-    const timerElement = document.querySelector('.timer-time');
-    if (timerElement) {
-        timerElement.textContent = '00:00';
-        timerElement.style.color = 'var(--neon-green)';
-        timerElement.style.textShadow = '0 0 20px rgba(0, 255, 153, 0.6)';
-    }
-    
-    updateTimerButtons();
-    
     setTimeout(() => {
         window.location.href = 'quiz.html';
-    }, 3000);
+    }, 2000);
+}
+
+function showSystemMessage(message) {
+    const messageBox = document.getElementById('systemMessageBox');
+    if (messageBox) {
+        messageBox.textContent = '> ' + message;
+        messageBox.style.animation = 'none';
+        setTimeout(() => {
+            messageBox.style.animation = 'slideInRight 0.5s ease-out';
+        }, 10);
+    }
+}
+
+function showQuestSaveOverlay() {
+    const overlay = document.getElementById('questSaveOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+    }
+}
+
+function startMotivationalMessages() {
+    // Show random motivational message every 40-80 seconds
+    const showMessage = () => {
+        const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+        showSystemMessage(randomMessage.replace('> ', ''));
+        
+        const nextDelay = 40000 + Math.random() * 40000; // 40-80 seconds
+        messageUpdateTimer = setTimeout(showMessage, nextDelay);
+    };
+    
+    // Start after 5 seconds
+    messageUpdateTimer = setTimeout(showMessage, 5000);
 }
 
 function playWarningSound() {
@@ -194,16 +400,4 @@ function playWarningSound() {
     } catch (e) {
         console.log('⚠️ Audio unavailable');
     }
-}
-
-function updateTimerButtons() {
-    const buttons = document.querySelectorAll('.btn-timer');
-    buttons.forEach(btn => {
-        if (btn.textContent.includes('START')) {
-            btn.style.display = isRunning ? 'none' : 'block';
-        } else if (btn.textContent.includes('PAUSE') || btn.textContent.includes('RESUME')) {
-            btn.style.display = isRunning ? 'block' : 'none';
-            btn.textContent = isPaused ? 'RESUME READING' : 'PAUSE READING';
-        }
-    });
 }
