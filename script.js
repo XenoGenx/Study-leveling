@@ -592,7 +592,7 @@ function getMotivationalMessage(quizScore, readingTime, targetTime, streak) {
  * @param {number} streak - Streak ปัจจุบัน
  * @returns {array} อาร์เรย์ Badge ที่เพิ่งปลดล็อก
  */
-function checkBadgeUnlock(player, readingTime, targetTime, quizScore, streak) {
+function checkBadgeUnlock(player, readingTime, targetTime, quizScore, streak, totalStudyTime = 0) {
     const newBadges = [];
     const existingBadges = player.badges || [];
     
@@ -625,6 +625,21 @@ function checkBadgeUnlock(player, readingTime, targetTime, quizScore, streak) {
     const hour = new Date().getHours();
     if ((hour >= 22 || hour < 6) && !existingBadges.includes('Night Scholar')) {
         newBadges.push({ id: 'night-scholar', name: 'Night Scholar', icon: '🌙' });
+    }
+    
+    // Egoist - อ่านรวมเกิน 10 ชั่วโมง (600 นาที)
+    if (totalStudyTime >= 600 && !existingBadges.includes('Egoist')) {
+        newBadges.push({ id: 'egoist', name: 'Egoist', icon: '💪' });
+    }
+    
+    // Time Devourer - อ่านรวมเกิน 30 ชั่วโมง (1800 นาที)
+    if (totalStudyTime >= 1800 && !existingBadges.includes('Time Devourer')) {
+        newBadges.push({ id: 'time-devourer', name: 'Time Devourer', icon: '⏱️' });
+    }
+    
+    // Egoist King - อ่านรวมเกิน 50 ชั่วโมง (3000 นาที)
+    if (totalStudyTime >= 3000 && !existingBadges.includes('Egoist King')) {
+        newBadges.push({ id: 'egoist-king', name: 'Egoist King', icon: '♔' });
     }
     
     return newBadges;

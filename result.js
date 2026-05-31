@@ -28,9 +28,12 @@ function displayResults() {
     const quizSkipped = sessionStorage.getItem('quizSkipped') === 'true';
     const questData = JSON.parse(sessionStorage.getItem('currentQuest')) || {};
     
+    // Calculate total study time (current + previous)
+    const totalStudyTime = (player.totalStudyTime || 0) + readingTime;
+    
     // Calculate rewards
     const rewards = calculateQuestExp(readingTime, questData.questTime, questData.questDifficulty, quizPercentage, player.streak || 0);
-    const newBadges = checkBadgeUnlock(player, readingTime, questData.questTime, quizPercentage, player.streak || 0);
+    const newBadges = checkBadgeUnlock(player, readingTime, questData.questTime, quizPercentage, player.streak || 0, totalStudyTime);
     const newSkills = checkSkillUnlock(player, quizPercentage);
     const rankUpInfo = checkRankUp(player.exp, player.exp + rewards.totalExp);
     
