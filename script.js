@@ -607,6 +607,11 @@ function checkBadgeUnlock(player, readingTime, targetTime, quizScore, streak, to
     const newBadges = [];
     const existingBadges = player.badges || [];
     
+    // Early Access - สมัครแล้วจับเวลาครั้งแรก
+    if (player.questsCompleted === 1 && !existingBadges.includes('Early Access')) {
+        newBadges.push({ id: 'early-access', name: 'Early Access', icon: '⚡' });
+    }
+    
     // First Clear - ทำเควสครั้งแรก
     if (player.questsCompleted === 1 && !existingBadges.includes('First Clear')) {
         newBadges.push({ id: 'first-clear', name: 'First Clear', icon: '🗝️' });
