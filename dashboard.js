@@ -162,8 +162,8 @@ function displayQuestForm(player) {
     
     let html = `
         <div class="form-group">
-            <label class="form-label">Hunt Name</label>
-            <input type="text" id="questName" class="form-input" placeholder="Create your hunt name..." maxlength="50">
+            <label class="form-label">QUEST</label>
+            <input type="text" id="questName" class="form-input" placeholder="สร้างเควสของคุณ" maxlength="50">
         </div>
         
         <div class="form-group">
