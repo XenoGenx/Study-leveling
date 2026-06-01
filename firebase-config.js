@@ -15,10 +15,28 @@ const firebaseConfig = {
 
 // Initialize Firebase - Wait until Firebase SDK is loaded
 let db, auth;
+let firebaseInitAttempts = 0;
+const MAX_INIT_ATTEMPTS = 50; // ~5 seconds with 100ms intervals
 
 function initializeFirebase() {
     if (typeof firebase === 'undefined') {
-        console.warn('⚠️ Firebase SDK not loaded yet, retrying...');
+        firebaseInitAttempts++;
+        if (firebaseInitAttempts % 5 === 0) { // Log every 5th attempt
+            console.warn(`⚠️ Firebase SDK not loaded yet, attempt ${firebaseInitAttempts}...`);
+        }
+        
+        if (firebaseInitAttempts > MAX_INIT_ATTEMPTS) {
+            console.error('❌ Firebase SDK failed to load from CDN after multiple attempts');
+            // Show error to user
+            const statusMsg = document.getElementById('statusMsg');
+            if (statusMsg) {
+                statusMsg.textContent = 'Firebase Connection Failed';
+                statusMsg.style.color = '#ff0055';
+            }
+            showFirebaseError();
+            return; // Stop trying
+        }
+        
         setTimeout(initializeFirebase, 100);
         return;
     }
@@ -74,6 +92,19 @@ function setupAuthStateListener() {
             console.log('❌ ยังไม่ล็อกอิน');
         }
     });
+}
+
+// Show error message if Firebase fails to load
+function showFirebaseError() {
+    const messageBox = document.getElementById('messageBox');
+    if (messageBox) {
+        messageBox.innerHTML = `
+            <div style="background-color: #ff0055; color: white; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                <strong>⚠️ Connection Issue</strong><br/>
+                <small>Unable to connect to Firebase. Please check your internet connection and refresh the page.</small>
+            </div>
+        `;
+    }
 }
 
 /**
