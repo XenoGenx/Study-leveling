@@ -13,12 +13,33 @@ const firebaseConfig = {
     appId: "1:123456789012:web:abc123def456ghi789jkl"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase - Wait until Firebase SDK is loaded
+let db, auth;
 
-// Get Firestore reference
-const db = firebase.firestore();
-const auth = firebase.auth();
+function initializeFirebase() {
+    if (typeof firebase === 'undefined') {
+        console.warn('⚠️ Firebase SDK not loaded yet, retrying...');
+        setTimeout(initializeFirebase, 100);
+        return;
+    }
+    
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.firestore();
+        auth = firebase.auth();
+        console.log('✅ Firebase initialized successfully');
+    } catch (error) {
+        console.error('❌ Firebase initialization error:', error);
+    }
+}
+
+// Start initialization
+initializeFirebase();
+
+// Setup auth listener after a small delay to ensure initialization
+setTimeout(setupAuthStateListener, 200);
 
 // ========================================
 // FIREBASE REALTIME SYNC
@@ -27,33 +48,46 @@ const auth = firebase.auth();
 let currentUser = null;
 let currentUserID = null;
 
-/**
- * ตั้งค่า Auto Login เมื่อเข้าเว็บ
- */
-auth.onAuthStateChanged(user => {
-    if (user) {
-        currentUser = user.email;
-        currentUserID = user.uid;
-        console.log('✅ ล็อกอินอยู่:', user.email);
-        
-        // อัปเดต UI ให้ดูเหมือนล็อกอินแล้ว
-        const nameInput = document.getElementById('hunterNameInput');
-        if (nameInput) {
-            nameInput.value = user.displayName || user.email.split('@')[0];
-            nameInput.disabled = true;
-        }
-    } else {
-        currentUser = null;
-        currentUserID = null;
-        console.log('❌ ยังไม่ล็อกอิน');
+// Setup auth state listener once Firebase is initialized
+function setupAuthStateListener() {
+    if (typeof auth === 'undefined') {
+        console.warn('⚠️ Auth not ready, retrying auth listener setup...');
+        setTimeout(setupAuthStateListener, 100);
+        return;
     }
-});
+    
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user.email;
+            currentUserID = user.uid;
+            console.log('✅ ล็อกอินอยู่:', user.email);
+            
+            // อัปเดต UI ให้ดูเหมือนล็อกอินแล้ว
+            const nameInput = document.getElementById('hunterNameInput');
+            if (nameInput) {
+                nameInput.value = user.displayName || user.email.split('@')[0];
+                nameInput.disabled = true;
+            }
+        } else {
+            currentUser = null;
+            currentUserID = null;
+            console.log('❌ ยังไม่ล็อกอิน');
+        }
+    });
+}
 
 /**
  * สมัครสมาชิก + ล็อกอินด้วย Email
  */
 function registerAndLogin(hunterName, email = null) {
     return new Promise((resolve, reject) => {
+        // Wait for auth to be initialized
+        if (typeof auth === 'undefined') {
+            console.warn('⚠️ Auth not initialized, retrying...');
+            setTimeout(() => registerAndLogin(hunterName, email).then(resolve).catch(reject), 200);
+            return;
+        }
+        
         // ถ้าไม่มี email ให้สร้างจากชื่อ
         const userEmail = email || hunterName.toLowerCase() + '@studyleveling.local';
         const userPassword = 'StudentHunter123!'; // Password ชั่วคราว
@@ -90,9 +124,19 @@ function registerAndLogin(hunterName, email = null) {
  * ล็อกเอาท์
  */
 function logoutUser() {
-    return auth.signOut().then(() => {
-        currentUser = null;
-        currentUserID = null;
-        console.log('❌ ล็อกเอาท์สำเร็จ');
+    return new Promise((resolve, reject) => {
+        // Wait for auth to be initialized
+        if (typeof auth === 'undefined') {
+            console.warn('⚠️ Auth not initialized, retrying...');
+            setTimeout(() => logoutUser().then(resolve).catch(reject), 200);
+            return;
+        }
+        
+        auth.signOut().then(() => {
+            currentUser = null;
+            currentUserID = null;
+            console.log('❌ ล็อกเอาท์สำเร็จ');
+            resolve();
+        }).catch(reject);
     });
 }
