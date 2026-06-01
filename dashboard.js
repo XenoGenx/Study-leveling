@@ -58,7 +58,9 @@ function loadDashboard() {
         return;
     }
     
-    const player = getPlayerData(currentPlayer);
+    // Get player data synchronously from localStorage
+    const players = JSON.parse(localStorage.getItem('players')) || {};
+    const player = players[currentPlayer];
     
     if (!player) {
         window.location.href = 'index.html';

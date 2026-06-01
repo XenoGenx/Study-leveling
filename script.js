@@ -15,19 +15,14 @@ function initializeStorage() {
 }
 
 /**
- * โหลดข้อมูลผู้ใช้จาก Firebase Firestore (Async)
+ * โหลดข้อมูลผู้ใช้จาก localStorage
  * @param {string} playerName - ชื่อผู้ใช้
  * @returns {Promise<object>} ข้อมูลผู้ใช้ หรือ null ถ้าไม่พบ
  */
 async function getPlayerData(playerName) {
     try {
-        if (!currentUserID) return null;
-        
-        const doc = await db.collection('players').doc(currentUserID).get();
-        if (doc.exists) {
-            return doc.data();
-        }
-        return null;
+        const players = JSON.parse(localStorage.getItem('players')) || {};
+        return players[playerName] || null;
     } catch (error) {
         console.error('❌ Error loading player data:', error);
         return null;
@@ -35,26 +30,18 @@ async function getPlayerData(playerName) {
 }
 
 /**
- * บันทึกข้อมูลผู้ใช้ลง Firebase Firestore (Async)
+ * บันทึกข้อมูลผู้ใช้ลง localStorage
  * @param {string} playerName - ชื่อผู้ใช้
  * @param {object} data - ข้อมูลผู้ใช้
  */
 async function savePlayerData(playerName, data) {
     try {
-        if (!currentUserID) {
-            console.warn('⚠️ ไม่ได้ล็อกอิน ไม่สามารถบันทึกข้อมูลได้');
-            // Fallback to localStorage
-            const players = JSON.parse(localStorage.getItem('players')) || {};
-            players[playerName] = data;
-            localStorage.setItem('players', JSON.stringify(players));
-            return;
-        }
-        
+        const players = JSON.parse(localStorage.getItem('players')) || {};
         data.lastUpdated = new Date().toISOString();
         data.playerName = playerName;
-        
-        await db.collection('players').doc(currentUserID).set(data, { merge: true });
-        console.log('✅ Player data saved to Firebase:', playerName);
+        players[playerName] = data;
+        localStorage.setItem('players', JSON.stringify(players));
+        console.log('✅ Player data saved:', playerName);
     } catch (error) {
         console.error('❌ Error saving player data:', error);
     }
@@ -66,8 +53,9 @@ async function savePlayerData(playerName, data) {
  */
 async function deletePlayerData(playerName) {
     try {
-        if (!currentUserID) return;
-        await db.collection('players').doc(currentUserID).delete();
+        const players = JSON.parse(localStorage.getItem('players')) || {};
+        delete players[playerName];
+        localStorage.setItem('players', JSON.stringify(players));
         console.log('✅ Player data deleted:', playerName);
     } catch (error) {
         console.error('❌ Error deleting player data:', error);

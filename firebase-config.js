@@ -36,8 +36,13 @@ function registerAndLogin(hunterName, email = null) {
                     level: 1,
                     exp: 0,
                     totalReadingTime: 0,
+                    totalStudyTime: 0,
                     completedQuests: 0,
+                    streak: 0,
                     badges: [],
+                    skillCards: [],
+                    questsCompleted: 0,
+                    rank: 'Rank E',
                     createdAt: new Date().toISOString()
                 };
                 localStorage.setItem('players', JSON.stringify(players));
