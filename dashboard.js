@@ -54,6 +54,7 @@ function loadDashboard() {
     const currentPlayer = localStorage.getItem('currentPlayer');
     
     if (!currentPlayer) {
+        console.error('No current player set');
         window.location.href = 'index.html';
         return;
     }
@@ -63,12 +64,18 @@ function loadDashboard() {
     const player = players[currentPlayer];
     
     if (!player) {
+        console.error('Player not found in localStorage:', currentPlayer);
         window.location.href = 'index.html';
         return;
     }
     
+    console.log('✅ Loaded player:', player.name);
+    
     // Update player name
-    document.getElementById('welcomeName').textContent = player.name;
+    const welcomeName = document.getElementById('welcomeName');
+    if (welcomeName) {
+        welcomeName.textContent = player.name || currentPlayer;
+    }
     
     // Render all panels
     displaySkillsPanel(player);

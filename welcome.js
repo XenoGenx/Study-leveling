@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     enterGateBtn.addEventListener('click', enterGate);
     
     /**
-     * อัปเดตการแสดงสถานะเมื่อกรอกชื่อ (Async)
+     * อัปเดตการแสดงสถานะเมื่อกรอกชื่อ
      */
-    async function updateStatusDisplay() {
+    function updateStatusDisplay() {
         const hunterName = hunterNameInput.value.trim();
         
         if (hunterName.length === 0) {
@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const existingPlayer = await getPlayerData(hunterName);
+        // ✅ Synchronous access from localStorage
+        const existingPlayer = getPlayerData(hunterName);
         
         if (existingPlayer) {
             // ผู้ใช้เก่า
@@ -82,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         acceptQuestBtn.disabled = true;
         enterGateBtn.disabled = true;
         
-        // ล็อกอินด้วย Firebase
+        // ล็อกอินด้วย localStorage
         registerAndLogin(hunterName)
-            .then(async () => {
-                // ตรวจสอบว่ามีข้อมูลเก่าหรือไม่
-                const existingPlayer = await getPlayerData(hunterName);
+            .then(() => {
+                // ✅ Synchronous access from localStorage
+                const existingPlayer = getPlayerData(hunterName);
                 
                 if (existingPlayer) {
                     // Welcome Back
@@ -115,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * สร้างผู้ใช้ใหม่
      */
-    async function createNewPlayer(hunterName) {
+    function createNewPlayer(hunterName) {
         const newPlayer = {
             name: hunterName,
             rank: 'E',
@@ -141,8 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lastPlayedDate: new Date().toLocaleString('th-TH')
         };
         
-        // บันทึกลง Firebase
-        await savePlayerData(hunterName, newPlayer);
+        // ✅ Synchronous save to localStorage
+        savePlayerData(hunterName, newPlayer);
         localStorage.setItem('currentPlayer', hunterName);
         
         console.log('✓ ผู้ใช้ใหม่ถูกสร้างสำเร็จ:', newPlayer);
@@ -151,15 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * เข้าสู่ระบบสำหรับผู้ใช้เก่า
      */
-    async function loginExistingPlayer(hunterName) {
-        const player = await getPlayerData(hunterName);
+    function loginExistingPlayer(hunterName) {
+        const player = getPlayerData(hunterName);
         
         if (player) {
             // อัปเดตวันที่เล่นครั้งสุดท้าย
             player.lastPlayedDate = new Date().toLocaleString('th-TH');
             
-            // บันทึกกลับลง Firebase
-            await savePlayerData(hunterName, player);
+            // ✅ Synchronous save to localStorage
+            savePlayerData(hunterName, player);
         }
         
         localStorage.setItem('currentPlayer', hunterName);

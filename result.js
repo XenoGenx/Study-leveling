@@ -262,10 +262,15 @@ function claimReward() {
     player.totalStudyTime = (player.totalStudyTime || 0) + rewards.readingTime;
     player.lastPlayedDate = new Date().toLocaleString('th-TH');
     
-    // Save player
-    savePlayerData(currentPlayer, player);
-    
-    console.log('✓ Reward claimed and player data updated');
+    // ✅ Save player data immediately to localStorage
+    try {
+        const players = JSON.parse(localStorage.getItem('players')) || {};
+        players[currentPlayer] = player;
+        localStorage.setItem('players', JSON.stringify(players));
+        console.log('✅ Reward claimed and player data saved to localStorage');
+    } catch (error) {
+        console.error('❌ Error saving player data:', error);
+    }
     
     // Show success
     const claimBtn = document.querySelector('.btn-claim');
@@ -281,8 +286,8 @@ function claimReward() {
     sessionStorage.removeItem('quizPercentage');
     sessionStorage.removeItem('quizData');
     
-    // Redirect
+    // Redirect to dashboard
     setTimeout(() => {
         window.location.href = 'dashboard.html';
-    }, 2000);
+    }, 1500);
 }

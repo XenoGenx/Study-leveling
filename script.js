@@ -15,11 +15,11 @@ function initializeStorage() {
 }
 
 /**
- * โหลดข้อมูลผู้ใช้จาก localStorage
+ * โหลดข้อมูลผู้ใช้จาก localStorage (Synchronous)
  * @param {string} playerName - ชื่อผู้ใช้
- * @returns {Promise<object>} ข้อมูลผู้ใช้ หรือ null ถ้าไม่พบ
+ * @returns {object|null} ข้อมูลผู้ใช้ หรือ null ถ้าไม่พบ
  */
-async function getPlayerData(playerName) {
+function getPlayerData(playerName) {
     try {
         const players = JSON.parse(localStorage.getItem('players')) || {};
         return players[playerName] || null;
@@ -30,11 +30,11 @@ async function getPlayerData(playerName) {
 }
 
 /**
- * บันทึกข้อมูลผู้ใช้ลง localStorage
+ * บันทึกข้อมูลผู้ใช้ลง localStorage (Synchronous)
  * @param {string} playerName - ชื่อผู้ใช้
  * @param {object} data - ข้อมูลผู้ใช้
  */
-async function savePlayerData(playerName, data) {
+function savePlayerData(playerName, data) {
     try {
         const players = JSON.parse(localStorage.getItem('players')) || {};
         data.lastUpdated = new Date().toISOString();
@@ -42,23 +42,27 @@ async function savePlayerData(playerName, data) {
         players[playerName] = data;
         localStorage.setItem('players', JSON.stringify(players));
         console.log('✅ Player data saved:', playerName);
+        return true;
     } catch (error) {
         console.error('❌ Error saving player data:', error);
+        return false;
     }
 }
 
 /**
- * ลบข้อมูลผู้ใช้
+ * ลบข้อมูลผู้ใช้ (Synchronous)
  * @param {string} playerName - ชื่อผู้ใช้
  */
-async function deletePlayerData(playerName) {
+function deletePlayerData(playerName) {
     try {
         const players = JSON.parse(localStorage.getItem('players')) || {};
         delete players[playerName];
         localStorage.setItem('players', JSON.stringify(players));
         console.log('✅ Player data deleted:', playerName);
+        return true;
     } catch (error) {
         console.error('❌ Error deleting player data:', error);
+        return false;
     }
 }
 
