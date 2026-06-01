@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     enterGateBtn.addEventListener('click', enterGate);
     
     /**
-     * อัปเดตการแสดงสถานะเมื่อกรอกชื่อ
+     * อัปเดตการแสดงสถานะเมื่อกรอกชื่อ (Async)
      */
-    function updateStatusDisplay() {
+    async function updateStatusDisplay() {
         const hunterName = hunterNameInput.value.trim();
         
         if (hunterName.length === 0) {
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const existingPlayer = getPlayerData(hunterName);
+        const existingPlayer = await getPlayerData(hunterName);
         
         if (existingPlayer) {
             // ผู้ใช้เก่า
@@ -77,36 +77,45 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // ตรวจสอบผู้ใช้เก่า/ใหม่
-        const existingPlayer = getPlayerData(hunterName);
-        
-        if (existingPlayer) {
-            // Welcome Back
-            showMessage(`✨ Welcome Back, ${hunterName}!`, 'welcome');
-            console.log(`🎯 ผู้ใช้เก่า: ${hunterName} (Rank ${existingPlayer.rank})`);
-            loginExistingPlayer(hunterName);
-        } else {
-            // New Hunter Registered
-            showMessage(`🌟 New Hunter Registered: ${hunterName}`, 'welcome');
-            console.log(`✨ ผู้ใช้ใหม่: ${hunterName}`);
-            createNewPlayer(hunterName);
-        }
-        
         // Lock inputs
         hunterNameInput.disabled = true;
         acceptQuestBtn.disabled = true;
         enterGateBtn.disabled = true;
         
-        // Navigate after animation
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 2000);
+        // ล็อกอินด้วย Firebase
+        registerAndLogin(hunterName)
+            .then(async () => {
+                // ตรวจสอบว่ามีข้อมูลเก่าหรือไม่
+                const existingPlayer = await getPlayerData(hunterName);
+                
+                if (existingPlayer) {
+                    // Welcome Back
+                    showMessage(`✨ Welcome Back, ${hunterName}!`, 'welcome');
+                    console.log(`🎯 ผู้ใช้เก่า: ${hunterName} (Rank ${existingPlayer.rank})`);
+                } else {
+                    // New Hunter Registered
+                    showMessage(`🌟 New Hunter Registered: ${hunterName}`, 'welcome');
+                    console.log(`✨ ผู้ใช้ใหม่: ${hunterName}`);
+                    createNewPlayer(hunterName);
+                }
+                
+                // Navigate after animation
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            })
+            .catch(error => {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                hunterNameInput.disabled = false;
+                acceptQuestBtn.disabled = false;
+                enterGateBtn.disabled = false;
+            });
     }
     
     /**
      * สร้างผู้ใช้ใหม่
      */
-    function createNewPlayer(hunterName) {
+    async function createNewPlayer(hunterName) {
         const newPlayer = {
             name: hunterName,
             rank: 'E',
@@ -132,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lastPlayedDate: new Date().toLocaleString('th-TH')
         };
         
-        // บันทึกลง localStorage
-        savePlayerData(hunterName, newPlayer);
+        // บันทึกลง Firebase
+        await savePlayerData(hunterName, newPlayer);
         localStorage.setItem('currentPlayer', hunterName);
         
         console.log('✓ ผู้ใช้ใหม่ถูกสร้างสำเร็จ:', newPlayer);
@@ -142,16 +151,18 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * เข้าสู่ระบบสำหรับผู้ใช้เก่า
      */
-    function loginExistingPlayer(hunterName) {
-        const player = getPlayerData(hunterName);
+    async function loginExistingPlayer(hunterName) {
+        const player = await getPlayerData(hunterName);
         
-        // อัปเดตวันที่เล่นครั้งสุดท้าย
-        player.lastPlayedDate = new Date().toLocaleString('th-TH');
+        if (player) {
+            // อัปเดตวันที่เล่นครั้งสุดท้าย
+            player.lastPlayedDate = new Date().toLocaleString('th-TH');
+            
+            // บันทึกกลับลง Firebase
+            await savePlayerData(hunterName, player);
+        }
         
-        // บันทึกกลับลง localStorage
-        savePlayerData(hunterName, player);
         localStorage.setItem('currentPlayer', hunterName);
-        
         console.log('✓ ผู้ใช้เข้าสู่ระบบสำเร็จ:', hunterName);
     }
     

@@ -4,51 +4,78 @@
    ======================================== */
 
 // ========================================
-// INITIALIZATION & UTILITY FUNCTIONS
+// INITIALIZATION & UTILITY FUNCTIONS (FIREBASE)
 // ========================================
 
 /**
- * ตรวจสอบและสร้างสต์ localStorage สำหรับเก็บข้อมูลผู้ใช้
+ * ตั้งค่า Firebase สำหรับเก็บข้อมูลผู้ใช้
  */
 function initializeStorage() {
-    if (!localStorage.getItem('players')) {
-        localStorage.setItem('players', JSON.stringify({}));
+    console.log('✅ Firebase initialized for cloud storage');
+}
+
+/**
+ * โหลดข้อมูลผู้ใช้จาก Firebase Firestore (Async)
+ * @param {string} playerName - ชื่อผู้ใช้
+ * @returns {Promise<object>} ข้อมูลผู้ใช้ หรือ null ถ้าไม่พบ
+ */
+async function getPlayerData(playerName) {
+    try {
+        if (!currentUserID) return null;
+        
+        const doc = await db.collection('players').doc(currentUserID).get();
+        if (doc.exists) {
+            return doc.data();
+        }
+        return null;
+    } catch (error) {
+        console.error('❌ Error loading player data:', error);
+        return null;
     }
 }
 
 /**
- * โหลดข้อมูลผู้ใช้จาก localStorage
- * @param {string} playerName - ชื่อผู้ใช้
- * @returns {object} ข้อมูลผู้ใช้ หรือ null ถ้าไม่พบ
- */
-function getPlayerData(playerName) {
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    return players[playerName] || null;
-}
-
-/**
- * บันทึกข้อมูลผู้ใช้ลง localStorage
+ * บันทึกข้อมูลผู้ใช้ลง Firebase Firestore (Async)
  * @param {string} playerName - ชื่อผู้ใช้
  * @param {object} data - ข้อมูลผู้ใช้
  */
-function savePlayerData(playerName, data) {
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    players[playerName] = data;
-    localStorage.setItem('players', JSON.stringify(players));
+async function savePlayerData(playerName, data) {
+    try {
+        if (!currentUserID) {
+            console.warn('⚠️ ไม่ได้ล็อกอิน ไม่สามารถบันทึกข้อมูลได้');
+            // Fallback to localStorage
+            const players = JSON.parse(localStorage.getItem('players')) || {};
+            players[playerName] = data;
+            localStorage.setItem('players', JSON.stringify(players));
+            return;
+        }
+        
+        data.lastUpdated = new Date().toISOString();
+        data.playerName = playerName;
+        
+        await db.collection('players').doc(currentUserID).set(data, { merge: true });
+        console.log('✅ Player data saved to Firebase:', playerName);
+    } catch (error) {
+        console.error('❌ Error saving player data:', error);
+    }
 }
 
 /**
  * ลบข้อมูลผู้ใช้
  * @param {string} playerName - ชื่อผู้ใช้
  */
-function deletePlayerData(playerName) {
-    const players = JSON.parse(localStorage.getItem('players')) || {};
-    delete players[playerName];
-    localStorage.setItem('players', JSON.stringify(players));
+async function deletePlayerData(playerName) {
+    try {
+        if (!currentUserID) return;
+        await db.collection('players').doc(currentUserID).delete();
+        console.log('✅ Player data deleted:', playerName);
+    } catch (error) {
+        console.error('❌ Error deleting player data:', error);
+    }
 }
 
 /**
- * ดึงรายชื่อผู้ใช้ทั้งหมด
+ * ดึงรายชื่อผู้ใช้ทั้งหมด (Fallback to localStorage)
  * @returns {array} อาร์เรย์ชื่อผู้ใช้
  */
 function getAllPlayers() {
